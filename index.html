@@ -339,30 +339,43 @@
   const sceneDir     = new THREE.DirectionalLight(0xffffff, 0.0); // off by default, model loader uses its own
   scene.add(sceneAmbient, sceneDir);
 
-  /* ── OFF-AXIS PROJECTION — the core window illusion ── */
+  /* ── CAMERA VIEW — rotation-primary, off-axis secondary ──
+     Phase 3 architecture:
+       1. Camera ROTATES (yaw/pitch) based on head tracking — primary illusion
+       2. Asymmetric frustum shift is additive and subtle — reinforces depth separation
+          between objects at different Z without overriding the rotation feel
+       This unifies panorama, flat media, models and default scene under one system.
+  ── */
   function applyOffAxis(hx, hy) {
-    if(isPanoActive){
-      // Panoramic mode: rotate camera to look around inside sphere.
-      // Off-axis frustum shift is imperceptible at radius 250.
+    const sens = CFG.sensitivity;
+
+    if (isPanoActive) {
+      // PANO: pure rotation, NO frustum shift (imperceptible at radius 250)
       cam3.rotation.order = 'YXZ';
-      cam3.rotation.y =  headSmooth.x * 0.4;  // head right → camera yaws right (see right of pano)
-      cam3.rotation.x = -headSmooth.y * 0.3;  // head up    → camera pitches up (see top of pano)
+      cam3.rotation.y =  hx * 0.4 * sens;
+      cam3.rotation.x = -hy * 0.3 * sens;
       cam3.rotation.z =  0;
       cam3.updateProjectionMatrix();
       return;
     }
 
-    // Flat mode — asymmetric frustum shift (off-axis projection)
-    // Z scales parallax strength: lean in → stronger depth separation
+    // FLAT / 3D SCENE: rotation PRIMARY, subtle frustum shift SECONDARY
+    // Rotation creates the natural "looking around" window feel
+    cam3.rotation.order = 'YXZ';
+    cam3.rotation.y =  hx * 0.22 * sens;
+    cam3.rotation.x = -hy * 0.18 * sens;
+    cam3.rotation.z =  0;
+
+    // Secondary off-axis shift — adds extra parallax depth separation for 3D objects
+    // Kept subtle (k * 0.25) so it supplements rotation, doesn't fight it
     const depthFactor = 1 + headSmooth.z * 0.4;
     const asp   = window.innerWidth / window.innerHeight;
     const fovR  = THREE.MathUtils.degToRad(cam3.fov);
     const halfH = Math.tan(fovR * 0.5) * cam3.near;
     const halfW = halfH * asp;
-    const k     = CFG.sensitivity * CFG.depthScale * depthFactor;
+    const k     = CFG.depthScale * depthFactor * 0.25; // decoupled from sensitivity (rotation handles that)
     const sx    =  hx * halfW * k;
     const sy    = (CFG.flipY ? -hy : hy) * halfH * k;
-    cam3.rotation.set(0, 0, 0); // clear any leftover pano rotation
     cam3.projectionMatrix.makePerspective(
       -halfW - sx,  halfW - sx,
        halfH - sy, -halfH - sy,
@@ -519,6 +532,8 @@
     if(bgVideoEl){ bgVideoEl.pause(); bgVideoEl.removeAttribute('src'); bgVideoEl.load(); bgVideoEl.remove(); bgVideoEl=null; }
     clearModel(); // also clear any loaded 3D model + its lights
     isPanoActive = false; // restore normal off-axis mode
+    cam3.rotation.set(0, 0, 0); // reset camera rotation from pano mode
+    cam3.updateProjectionMatrix();
     if(restoreScene){
       setSceneVisible(true); restoreFog();
       el('m-clear')?.classList.add('hidden');
@@ -738,14 +753,18 @@
     return tex;
   }
 
-  // Single-plane shader replaces the 5-layer stack — more convincing and faster
+  // Single-plane shader — center-anchored per-pixel parallax
+  // The key fix: subtract depth at center so the image center stays fixed.
+  // Pixels closer than center shift opposite to camera rotation.
+  // Pixels farther than center shift with camera rotation.
+  // This is the correct parallax-from-depth formula — no sliding.
   function buildDepthShader(texture, asp) {
     const h = 18, w = h * asp;
     const uniforms = {
       uTexture: { value: texture },
       uDepth:   { value: depthMapTex },
-      uHead:    { value: new THREE.Vector2(0, 0) },
-      uStrength:{ value: 0.06 }, // parallax intensity per depth unit
+      uCamRot:  { value: new THREE.Vector2(0, 0) }, // camera rotation angles in radians
+      uStrength:{ value: 0.12 }, // parallax intensity (higher now that it's anchored correctly)
     };
     const mat = new THREE.ShaderMaterial({
       uniforms,
@@ -759,13 +778,19 @@
       fragmentShader: [
         'uniform sampler2D uTexture;',
         'uniform sampler2D uDepth;',
-        'uniform vec2 uHead;',
+        'uniform vec2 uCamRot;',   // camera yaw (x) and pitch (y) in radians
         'uniform float uStrength;',
         'varying vec2 vUv;',
         'void main() {',
         '  float d = texture2D(uDepth, vUv).r;',
-        '  // Close pixels (d→1) shift opposite to head = parallax depth cue',
-        '  vec2 shifted = vUv - uHead * uStrength * d;',
+        '  // Depth at scene center — anchor point stays fixed under camera rotation',
+        '  float dCenter = texture2D(uDepth, vec2(0.5, 0.5)).r;',
+        '  // Relative depth: positive = closer than center, negative = farther',
+        '  float dRel = d - dCenter;',
+        '  // Camera rotates right → close pixels appear to shift left (parallax)',
+        '  // uCamRot.x = yaw (positive right), uCamRot.y = pitch (positive up)',
+        '  vec2 shift = vec2(-uCamRot.x, uCamRot.y) * uStrength * dRel;',
+        '  vec2 shifted = vUv + shift;',
         '  gl_FragColor = texture2D(uTexture, clamp(shifted, 0.002, 0.998));',
         '}'
       ].join('\n'),
@@ -1173,17 +1198,19 @@
     headSmooth.y+=(headRaw.y-headSmooth.y)*a;
     headSmooth.z+=(headRaw.z-headSmooth.z)*a; // Z depth smoothing
 
-    applyOffAxis(headSmooth.x,headSmooth.y);
+    applyOffAxis(headSmooth.x, headSmooth.y);
 
-    // Update depth shader with current head position
+    // Feed camera rotation angles to depth shader — not raw head position.
+    // This keeps depth shader in sync with the actual view direction.
+    // cam3.rotation.y = yaw (right = positive), cam3.rotation.x = pitch (up = positive)
     if(depthShaderUniforms){
-      depthShaderUniforms.uHead.value.set(headSmooth.x, headSmooth.y);
+      depthShaderUniforms.uCamRot.value.set(cam3.rotation.y, cam3.rotation.x);
     }
 
-    // 3D model — rotation only (off-axis projection handles the parallax)
+    // 3D model — camera rotation already moves the view around the anchored model.
+    // Add only a very subtle idle slow rotation so it doesn't feel frozen when head is still.
     if(modelGroup){
-      modelGroup.rotation.y =  headSmooth.x * 0.25;
-      modelGroup.rotation.x = -headSmooth.y * 0.15;
+      modelGroup.rotation.y += 0.003; // gentle idle spin
     }
 
     // Slowly rotate preset portal rings for liveliness
@@ -1223,6 +1250,7 @@
       setStatus('FILE:// — TOUCH ACTIVE');
       setTimeout(()=>el('file-warning')?.classList.add('show'),1500);
     }
+    setPreset('space'); // start in Deep Space preset — shows immediately
     startCam(null);
   }
 
