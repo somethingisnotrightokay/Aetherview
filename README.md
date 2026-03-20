@@ -1,4 +1,5 @@
- > **AetherView** is a free, self-hosted, cross-platform 3D wallpaper engine that turns your screen into a dynamic window into another world.  
+ #Aether View
+> A free, self-hosted, cross-platform 3D wallpaper engine that turns your screen into a dynamic window into another world.  
 > Using webcam face tracking, gyroscope input, and touch interaction, it delivers physically-based off-axis parallax for a true depth illusion on both desktop and mobile.
 
 ---
