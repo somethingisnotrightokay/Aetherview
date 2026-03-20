@@ -5,20 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Holoscape Free</title>
+  <title>AetherView</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-
-  <!-- Import map: resolves 'three' → CDN ES module build (must come before any module scripts) -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js"
-    }
-  }
-  </script>
-
   <style>
     :root {
       --accent:       #9b7dff;
@@ -36,7 +26,6 @@
       --cyan:         #28d8de;
       --font:         'Space Mono','Courier New',monospace;
     }
-
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     html, body {
       width:100%; height:100%; overflow:hidden; background:#020010;
@@ -45,7 +34,6 @@
     }
     canvas#three { display:block; position:fixed; inset:0; }
 
-    /* ── Shared panel chrome ── */
     .panel {
       position:fixed;
       background:var(--panel-bg);
@@ -66,7 +54,7 @@
       background:linear-gradient(90deg,transparent,var(--accent-glow),transparent);
     }
 
-    /* ── Desktop settings ── */
+    /* Desktop settings */
     #settings { display:none; top:24px; right:24px; padding:22px 24px 18px; min-width:285px; }
     #settings h3 { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:4px; color:rgba(155,125,255,0.60); margin-bottom:18px; }
     .s-row { display:flex; align-items:center; gap:10px; margin-bottom:11px; }
@@ -84,28 +72,26 @@
     .keys { color:rgba(255,255,255,0.18); font-size:9px; line-height:2.1; }
     .keys kbd { background:var(--accent-faint); border:1px solid var(--accent-dim); border-radius:4px; padding:2px 7px; color:rgba(155,125,255,0.70); font-family:var(--font); }
 
-    /* ── Desktop camera preview ── */
+    /* Camera preview */
     #preview { display:none; flex-direction:column; gap:8px; bottom:22px; left:22px; padding:12px; }
     #preview.vis { display:flex; }
     #preview-canvas { width:160px; height:120px; border-radius:8px; display:block; image-rendering:pixelated; }
     #preview-stats { display:flex; justify-content:space-between; font-size:9px; color:rgba(155,125,255,0.55); }
     #preview-stats span { color:var(--accent); font-weight:700; }
 
-    /* ── HUD ── */
+    /* HUD */
     #status { position:fixed; top:20px; left:24px; font-family:var(--font); font-size:9px; letter-spacing:2.5px; color:rgba(155,125,255,0.45); pointer-events:none; z-index:99; transition:opacity 1.2s; text-transform:uppercase; }
     #hint { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); font-family:var(--font); font-size:9px; letter-spacing:1.5px; color:var(--text-faint); pointer-events:none; white-space:nowrap; transition:opacity 1.5s; z-index:99; }
 
-    /* ── File:// warning modal ── */
+    /* File:// warning */
     #file-warning {
       display:none; position:fixed; top:50%; left:50%;
       transform:translate(-50%,-50%);
-      background:rgba(2,0,16,0.97);
-      border:1px solid var(--coral);
+      background:rgba(2,0,16,0.97); border:1px solid var(--coral);
       border-radius:14px; padding:26px 32px 22px;
       backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
       box-shadow:0 0 40px rgba(255,107,91,0.18),0 8px 40px rgba(0,0,0,0.8);
-      font-family:var(--font); text-align:center;
-      max-width:340px; width:90%; z-index:500;
+      font-family:var(--font); text-align:center; max-width:340px; width:90%; z-index:500;
     }
     #file-warning.show { display:block; }
     #file-warning h4 { color:var(--coral); font-size:11px; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; }
@@ -113,33 +99,28 @@
     #file-warning-close { background:rgba(255,107,91,0.14); border:1px solid var(--coral); border-radius:8px; padding:10px 22px; font-family:var(--font); font-size:10px; letter-spacing:1px; color:var(--coral); cursor:pointer; text-transform:uppercase; transition:background 0.15s; }
     #file-warning-close:hover { background:rgba(255,107,91,0.26); }
 
-    /* ── Drag overlay (updated to show video support) ── */
+    /* Drag overlay */
     #drag-overlay { display:none; position:fixed; inset:0; background:rgba(60,30,180,0.15); border:3px dashed rgba(155,125,255,0.48); z-index:300; align-items:center; justify-content:center; font-family:var(--font); font-size:13px; letter-spacing:5px; color:rgba(200,180,255,0.70); text-transform:uppercase; }
     #drag-overlay.on { display:flex; }
 
-    /* ── Mobile bottom sheet ── */
+    /* Mobile sheet */
     #mobile-sheet {
       display:none; position:fixed; bottom:0; left:0; right:0; z-index:200;
       background:linear-gradient(180deg,rgba(2,0,30,0.96) 0%,rgba(2,0,16,0.98) 100%);
-      border-top:1px solid var(--panel-border);
-      border-radius:20px 20px 0 0;
+      border-top:1px solid var(--panel-border); border-radius:20px 20px 0 0;
       backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
       box-shadow:0 -6px 40px rgba(0,0,0,0.80),inset 0 1px 0 rgba(180,150,255,0.12);
-      transform:translateY(calc(100% - 56px));
-      transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
-      padding-bottom:env(safe-area-inset-bottom,20px);
-      font-family:var(--font);
+      transform:translateY(calc(100% - 56px)); transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
+      padding-bottom:env(safe-area-inset-bottom,20px); font-family:var(--font);
     }
     #mobile-sheet::before { content:''; position:absolute; top:0; left:30px; right:30px; height:1px; background:linear-gradient(90deg,transparent,var(--accent-glow),transparent); }
     #mobile-sheet.open { transform:translateY(0); }
     #sheet-handle { display:flex; flex-direction:column; align-items:center; padding:12px 0 10px; cursor:pointer; user-select:none; -webkit-user-select:none; }
-    /* Gradient pill */
     #sheet-pill { width:40px; height:4px; background:linear-gradient(90deg,var(--accent-dim),var(--accent),var(--accent-dim)); border-radius:2px; margin-bottom:8px; }
     #sheet-title { font-size:8px; letter-spacing:4px; text-transform:uppercase; color:rgba(155,125,255,0.50); }
     #sheet-body { padding:2px 22px 26px; max-height:74vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
     .sh-sec { font-size:8px; letter-spacing:3px; text-transform:uppercase; color:rgba(155,125,255,0.38); margin:16px 0 10px; padding-bottom:4px; border-bottom:1px solid rgba(255,255,255,0.04); }
 
-    /* Mobile buttons */
     .m-btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; background:rgba(155,125,255,0.10); border:1px solid rgba(155,125,255,0.28); border-radius:10px; color:var(--text); font-family:var(--font); font-size:11px; letter-spacing:0.8px; padding:12px 18px; cursor:pointer; margin:0 6px 8px 0; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none; transition:all 0.15s; }
     .m-btn:active { background:rgba(155,125,255,0.25); transform:scale(0.98); }
     .m-btn.pri { background:linear-gradient(135deg,rgba(155,125,255,0.20),rgba(100,80,200,0.20)); border-color:rgba(155,125,255,0.55); }
@@ -147,28 +128,22 @@
     .m-btn.warn:active { background:rgba(255,107,93,0.20); }
     .m-btn.hidden { display:none; }
 
-    /* Mode badge */
     .mode-badge { display:inline-block; font-size:8px; letter-spacing:1px; padding:3px 8px; border-radius:4px; margin-left:8px; text-transform:uppercase; }
     .mode-badge.touch { background:rgba(40,216,222,0.14); color:var(--cyan); border:1px solid rgba(40,216,222,0.28); }
     .mode-badge.gyro  { background:rgba(155,125,255,0.14); color:var(--accent); border:1px solid rgba(155,125,255,0.28); }
     .mode-badge.cam   { background:rgba(0,255,136,0.10); color:#00ff88; border:1px solid rgba(0,255,136,0.28); }
 
-    /* Mobile select */
     .m-sel { width:100%; background:rgba(20,12,50,0.95); border:1px solid var(--accent-dim); border-radius:8px; color:var(--text); font-family:var(--font); font-size:11px; padding:10px 12px; outline:none; margin-bottom:6px; }
     .m-sel option { background:#0a0520; }
-
-    /* Mobile rows */
     .m-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
     .m-row label { flex:0 0 90px; color:var(--text-dim); font-size:10px; letter-spacing:0.5px; }
     .m-row input[type=range] { flex:1; accent-color:var(--accent); height:3px; }
     .m-row .val { flex:0 0 44px; text-align:right; color:var(--accent); font-size:10px; font-weight:700; }
     .m-row input[type=checkbox] { accent-color:var(--accent); width:18px; height:18px; cursor:pointer; }
 
-    /* FPS strip */
     #m-fps-strip { display:flex; justify-content:space-between; font-size:9px; color:rgba(155,125,255,0.45); margin-top:16px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06); }
     #m-fps-strip .fval { color:var(--accent); font-weight:700; }
 
-    /* Body class toggles */
     body.is-mobile #hint     { display:none; }
     body.is-mobile #settings { display:none !important; }
     body.is-mobile #preview  { display:none !important; }
@@ -177,60 +152,38 @@
 </head>
 <body>
 
+  <!-- Hidden webcam video for face tracking -->
+  <video id="webcam" playsinline muted
+    style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;"></video>
+
   <div id="status">INITIALIZING...</div>
   <div id="hint">[ S ] settings &nbsp;·&nbsp; [ C ] cam &nbsp;·&nbsp; [ I ] image &nbsp;·&nbsp; [ V ] video &nbsp;·&nbsp; [ X ] clear &nbsp;·&nbsp; [ R ] recal</div>
 
-  <!-- File:// warning modal -->
   <div id="file-warning">
     <h4>Limited Mode</h4>
-    <p>Camera and gyroscope require HTTPS.<br>
-    You're viewing from a local file.<br><br>
-    Touch-drag is active as fallback.<br>
-    Host on <strong style="color:var(--accent)">GitHub Pages</strong> for full features.</p>
+    <p>Camera and gyroscope require HTTPS.<br>You're viewing from a local file.<br><br>
+    Touch-drag is active as fallback.<br>Host on <strong style="color:var(--accent)">GitHub Pages</strong> for full features.</p>
     <button id="file-warning-close">Got it</button>
   </div>
 
-  <!-- ═══════════════════════════════
-       DESKTOP SETTINGS PANEL
-  ═══════════════════════════════ -->
+  <!-- Desktop settings -->
   <div id="settings" class="panel">
-    <h3>Holoscape Free v7</h3>
-
+    <h3>AetherView</h3>
     <div class="s-row">
       <label>Camera</label>
       <select id="cam-select-d"><option value="">Detecting...</option></select>
     </div>
     <hr class="div">
-    <div class="s-row">
-      <label>Sensitivity</label>
-      <input type="range" id="d-sens"   min="0.05" max="3"   step="0.05" value="0.8">
-      <span class="val" id="d-sens-v">0.80</span>
-    </div>
-    <div class="s-row">
-      <label>Depth Scale</label>
-      <input type="range" id="d-depth"  min="0.1"  max="4"   step="0.05" value="1.0">
-      <span class="val" id="d-depth-v">1.00</span>
-    </div>
-    <div class="s-row">
-      <label>Smoothing</label>
-      <input type="range" id="d-smooth" min="0.01" max="0.5" step="0.005" value="0.08">
-      <span class="val" id="d-smooth-v">0.080</span>
-    </div>
-    <div class="s-row cb-row">
-      <label>Flip Y</label>
-      <input type="checkbox" id="d-flipy">
-      <span class="note">invert vertical axis</span>
-    </div>
+    <div class="s-row"><label>Sensitivity</label><input type="range" id="d-sens" min="0.05" max="3" step="0.05" value="0.8"><span class="val" id="d-sens-v">0.80</span></div>
+    <div class="s-row"><label>Depth Scale</label><input type="range" id="d-depth" min="0.1" max="4" step="0.05" value="1.0"><span class="val" id="d-depth-v">1.00</span></div>
+    <div class="s-row"><label>Smoothing</label><input type="range" id="d-smooth" min="0.01" max="0.5" step="0.005" value="0.08"><span class="val" id="d-smooth-v">0.080</span></div>
+    <div class="s-row cb-row"><label>Flip Y</label><input type="checkbox" id="d-flipy"><span class="note">invert vertical</span></div>
     <hr class="div">
     <div class="fps-row"><span>Page FPS</span><span class="fval" id="d-fps-page">--</span></div>
     <div class="fps-row"><span>Track FPS</span><span class="fval" id="d-fps-track">--</span></div>
     <hr class="div">
     <div class="keys">
-      <kbd>S</kbd> panel &nbsp;
-      <kbd>C</kbd> cam preview &nbsp;
-      <kbd>I</kbd> image &nbsp;
-      <kbd>V</kbd> video &nbsp;
-      <kbd>X</kbd> clear<br>
+      <kbd>S</kbd> panel &nbsp;<kbd>C</kbd> cam preview &nbsp;<kbd>I</kbd> image &nbsp;<kbd>V</kbd> video &nbsp;<kbd>X</kbd> clear<br>
       <kbd>R</kbd> recalibrate &nbsp; drag image or video onto window
     </div>
   </div>
@@ -244,16 +197,10 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════════════
-       MOBILE BOTTOM SHEET
-  ═══════════════════════════════ -->
+  <!-- Mobile sheet -->
   <div id="mobile-sheet">
-    <div id="sheet-handle">
-      <div id="sheet-pill"></div>
-      <div id="sheet-title">Holoscape Free</div>
-    </div>
+    <div id="sheet-handle"><div id="sheet-pill"></div><div id="sheet-title">AetherView</div></div>
     <div id="sheet-body">
-
       <div class="sh-sec">Tracking</div>
       <button class="m-btn pri" id="m-gyro">Enable Gyroscope</button>
       <button class="m-btn" id="m-recal">Recalibrate</button>
@@ -272,26 +219,10 @@
       <select class="m-sel" id="cam-select-m"><option value="">Detecting...</option></select>
 
       <div class="sh-sec">Adjustments</div>
-      <div class="m-row">
-        <label>Sensitivity</label>
-        <input type="range" id="m-sens"   min="0.05" max="3"   step="0.05" value="0.8">
-        <span class="val" id="m-sens-v">0.80</span>
-      </div>
-      <div class="m-row">
-        <label>Depth Scale</label>
-        <input type="range" id="m-depth"  min="0.1"  max="4"   step="0.05" value="1.0">
-        <span class="val" id="m-depth-v">1.00</span>
-      </div>
-      <div class="m-row">
-        <label>Smoothing</label>
-        <input type="range" id="m-smooth" min="0.01" max="0.5" step="0.005" value="0.08">
-        <span class="val" id="m-smooth-v">0.080</span>
-      </div>
-      <div class="m-row">
-        <label>Flip Y</label>
-        <input type="checkbox" id="m-flipy">
-        <span style="color:rgba(200,190,255,0.28);font-size:9px;">invert vertical</span>
-      </div>
+      <div class="m-row"><label>Sensitivity</label><input type="range" id="m-sens" min="0.05" max="3" step="0.05" value="0.8"><span class="val" id="m-sens-v">0.80</span></div>
+      <div class="m-row"><label>Depth Scale</label><input type="range" id="m-depth" min="0.1" max="4" step="0.05" value="1.0"><span class="val" id="m-depth-v">1.00</span></div>
+      <div class="m-row"><label>Smoothing</label><input type="range" id="m-smooth" min="0.01" max="0.5" step="0.005" value="0.08"><span class="val" id="m-smooth-v">0.080</span></div>
+      <div class="m-row"><label>Flip Y</label><input type="checkbox" id="m-flipy"><span style="color:rgba(200,190,255,0.28);font-size:9px;">invert vertical</span></div>
 
       <div id="m-fps-strip">
         <span>Page: <span class="fval" id="m-fps-page">--</span> fps</span>
@@ -300,17 +231,629 @@
     </div>
   </div>
 
-  <!-- Drag overlay -->
   <div id="drag-overlay">Drop Image / Video</div>
-
-  <!-- Hidden file inputs -->
   <input type="file" id="file-img" accept="image/*" style="display:none">
   <input type="file" id="file-vid" accept="video/mp4,video/webm" style="display:none">
 
-  <!-- MediaPipe FaceMesh — UMD global (must load before module scripts) -->
+  <!-- UMD CDN scripts — no modules, no importmap, maximum compatibility -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" crossorigin="anonymous"></script>
 
-  <!-- Entry point — all logic in ES modules -->
-  <script type="module" src="js/ui.js"></script>
+  <script>
+  'use strict';
+
+  /* ── DEVICE + ORIGIN ── */
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    || (navigator.maxTouchPoints > 1 && !/Macintosh/i.test(navigator.userAgent));
+  const isFile = location.protocol === 'file:';
+
+  document.body.classList.add(isMobile ? 'is-mobile' : 'is-desktop');
+  if (isMobile) document.getElementById('mobile-sheet').style.display = 'block';
+
+  /* ── CONFIG ── */
+  const CFG = {
+    sensitivity : 0.8,
+    depthScale  : 1.0,
+    smoothing   : 0.08,
+    flipY       : false,
+    fov         : 60,
+    targetFPS   : isMobile ? 24 : 30,
+    touchDrag   : true,
+  };
+
+  /* ── HEAD STATE ── */
+  const headRaw    = { x: 0, y: 0 };
+  const headSmooth = { x: 0, y: 0 };
+  let refNoseX = 0.5, refNoseY = 0.5;
+  let calibrated = false;
+  let latestNose = null;
+  let gyroBaseG  = null, gyroBaseB = null;
+  let gyroActive = false;
+
+  /* ── FPS ── */
+  let rFrames=0, tFrames=0, rFPS=0, tFPS=0, fpsLast=performance.now();
+  function countR() {
+    rFrames++;
+    const now = performance.now();
+    if (now - fpsLast < 1000) return;
+    rFPS=rFrames; tFPS=tFrames; rFrames=tFrames=0; fpsLast=now;
+    setText('d-fps-page',  rFPS+' fps'); setText('d-fps-track', tFPS+' fps');
+    setText('p-fps-r', 'render: '+rFPS); setText('p-fps-t', 'track: '+tFPS);
+    setText('m-fps-page', rFPS);         setText('m-fps-track', tFPS);
+  }
+  function countT() { tFrames++; }
+  function el(id)       { return document.getElementById(id); }
+  function setText(id,v){ const e=el(id); if(e) e.textContent=v; }
+  function setStatus(msg){ const e=el('status'); if(e){e.style.opacity='1';e.textContent=msg;} }
+  function fadeStatus(ms){ setTimeout(()=>{ const e=el('status'); if(e)e.style.opacity='0'; },ms||2000); }
+
+  /* ── RENDERER ── */
+  const renderer = new THREE.WebGLRenderer({
+    antialias: !isMobile, powerPreference:'high-performance', stencil:false,
+  });
+  renderer.domElement.id = 'three';
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(1);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.setClearColor(0x020010, 1);
+  document.body.appendChild(renderer.domElement);
+
+  /* ── SCENE & CAMERA ── */
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x020010, isMobile ? 0.007 : 0.009);
+  const cam3 = new THREE.PerspectiveCamera(CFG.fov, window.innerWidth/window.innerHeight, 0.1, 800);
+  cam3.position.set(0, 0, 5);
+
+  /* ── OFF-AXIS PROJECTION — the core window illusion ── */
+  function applyOffAxis(hx, hy) {
+    const asp   = window.innerWidth / window.innerHeight;
+    const fovR  = THREE.MathUtils.degToRad(cam3.fov);
+    const halfH = Math.tan(fovR * 0.5) * cam3.near;
+    const halfW = halfH * asp;
+    const k     = CFG.sensitivity * CFG.depthScale;
+    const sx    =  hx * halfW * k;
+    const sy    = (CFG.flipY ? -hy : hy) * halfH * k;
+    cam3.projectionMatrix.makePerspective(
+      -halfW - sx,  halfW - sx,
+       halfH - sy, -halfH - sy,
+      cam3.near, cam3.far
+    );
+    cam3.projectionMatrixInverse.copy(cam3.projectionMatrix).invert();
+  }
+
+  /* ── TEXTURE HELPER ── */
+  function radialTex(size, stops) {
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = size;
+    const ctx = cv.getContext('2d');
+    const g = ctx.createRadialGradient(size*.5,size*.5,0,size*.5,size*.5,size*.5);
+    stops.forEach(([t,c]) => g.addColorStop(t,c));
+    ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
+    return new THREE.CanvasTexture(cv);
+  }
+  const starTex = radialTex(48,[
+    [0,'rgba(255,255,255,1)'],[0.15,'rgba(255,255,255,0.90)'],
+    [0.40,'rgba(255,250,245,0.30)'],[1,'rgba(255,255,255,0)'],
+  ]);
+
+  /* ── STARS ── */
+  const COLD=[[0.70,0.80,1],[0.80,0.85,1],[0.90,0.95,1],[1,1,1]];
+  const WARM=[[1,0.92,0.75],[1,0.85,0.70],[0.95,0.75,1],[1,0.95,0.85]];
+  const ACCN=[[0.60,0.90,1],[1,0.60,0.80],[0.80,0.60,1]];
+
+  function mkStars(n,zMin,zMax,sz,tints){
+    const geo=new THREE.BufferGeometry();
+    const pos=new Float32Array(n*3), col=new Float32Array(n*3);
+    for(let i=0;i<n;i++){
+      const cluster=Math.random()>0.85, spread=cluster?30:100;
+      pos[i*3]  =(Math.random()-0.5)*spread+(cluster?(Math.random()-0.5)*20:0);
+      pos[i*3+1]=(Math.random()-0.5)*(spread*0.65);
+      pos[i*3+2]=zMin+Math.random()*(zMax-zMin);
+      const bright=0.55+Math.random()*0.45;
+      const t=tints[Math.floor(Math.random()*tints.length)];
+      col[i*3]=t[0]*bright; col[i*3+1]=t[1]*bright; col[i*3+2]=t[2]*bright;
+    }
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',   new THREE.BufferAttribute(col,3));
+    const pts=new THREE.Points(geo,new THREE.PointsMaterial({
+      size:sz, map:starTex, vertexColors:true, transparent:true,
+      alphaTest:0.003, depthWrite:false,
+      blending:THREE.AdditiveBlending, sizeAttenuation:true,
+    }));
+    scene.add(pts); return pts;
+  }
+  const starLayers = isMobile
+    ? [mkStars(600,-250,-4,0.16,[...COLD,...WARM])]
+    : [mkStars(1000,-350,-70,0.10,COLD),
+       mkStars(400,-70,-20,0.18,[...COLD,...WARM]),
+       mkStars(80,-20,-4,0.35,[...WARM,...ACCN])];
+
+  /* ── NEBULAE — faux bloom ── */
+  const nebulae=[], nebGlows=[];
+
+  function addNeb(r,g,b,a,x,y,z,rz,w,h){
+    const ph=Math.random()*Math.PI*2;
+    const glowTex=radialTex(128,[
+      [0,    `rgba(${r},${g},${b},${(a*0.35).toFixed(2)})`],
+      [0.30, `rgba(${r},${g},${b},${(a*0.14).toFixed(2)})`],
+      [0.65, `rgba(${r},${g},${b},${(a*0.04).toFixed(2)})`],
+      [1,'rgba(0,0,0,0)'],
+    ]);
+    const glow=new THREE.Mesh(new THREE.PlaneGeometry(w*1.8,h*1.8),
+      new THREE.MeshBasicMaterial({map:glowTex,transparent:true,depthWrite:false,
+        blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));
+    glow.position.set(x,y,z-0.5); glow.rotation.z=rz;
+    glow.userData.ox=x; glow.userData.oy=y; glow.userData.ph=ph;
+    scene.add(glow); nebGlows.push(glow);
+
+    const rc=Math.min(255,r+40),gc=Math.min(255,g+40),bc=Math.min(255,b+40);
+    const coreTex=radialTex(64,[
+      [0,   `rgba(${rc},${gc},${bc},${a.toFixed(2)})`],
+      [0.35,`rgba(${r},${g},${b},${(a*0.50).toFixed(2)})`],
+      [0.70,`rgba(${r},${g},${b},${(a*0.10).toFixed(2)})`],
+      [1,'rgba(0,0,0,0)'],
+    ]);
+    const core=new THREE.Mesh(new THREE.PlaneGeometry(w,h),
+      new THREE.MeshBasicMaterial({map:coreTex,transparent:true,depthWrite:false,
+        blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));
+    core.position.set(x,y,z); core.rotation.z=rz;
+    core.userData.cx=x; core.userData.cy=y; core.userData.ph=ph;
+    scene.add(core); nebulae.push(core);
+  }
+
+  if(isMobile){
+    addNeb(60,40,200,0.85,-5,3,-55,0.30,38,26);
+    addNeb(200,50,120,0.80,6,-4,-40,-0.40,30,22);
+    addNeb(40,170,210,0.70,-2,-2,-70,0.10,45,32);
+  } else {
+    addNeb(60,40,200,0.85,-12,5,-110,0.30,50,36);
+    addNeb(200,50,120,0.80,10,-6,-85,-0.40,42,32);
+    addNeb(40,90,220,0.75,-8,-4,-130,0.50,55,40);
+    addNeb(160,40,200,0.72,6,4,-70,-0.20,38,28);
+    addNeb(40,170,210,0.70,-4,0,-150,0.10,65,46);
+    addNeb(210,70,80,0.55,0,-2,-30,1.00,22,16);
+  }
+
+  /* ── POLYHEDRA (desktop only) ── */
+  const floaters=[];
+  if(!isMobile){
+    const COLS=[0x9b7dff,0xff7db0,0x7db8ff,0xffba7d,0x7dffc8,0xd07dff,0x7dffff,0xff7dff];
+    const TYPES=['ico','oct','tet','dod'];
+    for(let i=0;i<10;i++){
+      const r=0.25+Math.random()*0.50;
+      let geo;
+      switch(TYPES[i%4]){
+        case'ico':geo=new THREE.IcosahedronGeometry(r,1);break;
+        case'oct':geo=new THREE.OctahedronGeometry(r);break;
+        case'tet':geo=new THREE.TetrahedronGeometry(r);break;
+        default:  geo=new THREE.DodecahedronGeometry(r);break;
+      }
+      const wf=Math.random()>0.25;
+      const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({
+        color:COLS[i%COLS.length],wireframe:wf,transparent:true,
+        opacity:wf?0.14:0.07,blending:THREE.AdditiveBlending,depthWrite:false,
+      }));
+      m.position.set((Math.random()-0.5)*32,(Math.random()-0.5)*18,-3-Math.random()*45);
+      m.userData.rot={x:(Math.random()-0.5)*0.005,y:(Math.random()-0.5)*0.008,z:(Math.random()-0.5)*0.003};
+      scene.add(m); floaters.push(m);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════
+     MEDIA — images, video, depth layering, panoramic
+  ═══════════════════════════════════════════════════ */
+  const bgMeshes=[];
+  let bgTexture=null, bgVideoEl=null;
+
+  function setSceneVisible(v){
+    nebulae.forEach(n=>{n.visible=v;});
+    nebGlows.forEach(g=>{g.visible=v;});
+    floaters.forEach(f=>{f.visible=v;});
+  }
+
+  function restoreFog(){ scene.fog=new THREE.FogExp2(0x020010,isMobile?0.007:0.009); }
+
+  function clearMedia(restoreScene){
+    if(bgTexture){ bgTexture.dispose(); bgTexture=null; }
+    bgMeshes.forEach(m=>{
+      scene.remove(m);
+      if(m.geometry) m.geometry.dispose();
+      if(m.material) m.material.dispose();
+    });
+    bgMeshes.length=0;
+    if(bgVideoEl){ bgVideoEl.pause(); bgVideoEl.removeAttribute('src'); bgVideoEl.load(); bgVideoEl.remove(); bgVideoEl=null; }
+    if(restoreScene){
+      setSceneVisible(true); restoreFog();
+      el('m-clear')?.classList.add('hidden');
+      setStatus('MEDIA CLEARED'); fadeStatus(1400);
+    }
+  }
+
+  /* 3-plane depth layering for flat images/video
+     All 3 planes use the same texture at different Z depths.
+     Off-axis projection shifts closer planes more → parallax depth illusion.
+     Scales are corrected so all planes appear the same size at rest (cam at z=5). */
+  function buildDepthLayers(texture, asp){
+    const baseH=18, baseW=baseH*asp, baseZ=-15;
+    // cam-to-plane distances at rest: bg=23 mid=20 fg=17
+    // apparent size ∝ 1/distance → scale to match mid: 23/20 | 1.00 | 17/20
+    [
+      {dz:-3, scale:1.15, opacity:0.60, order:0},  // background
+      {dz: 0, scale:1.00, opacity:1.00, order:1},  // midground (main)
+      {dz:+3, scale:0.85, opacity:0.30, order:2},  // foreground (depth cue)
+    ].forEach(({dz,scale,opacity,order})=>{
+      const mesh=new THREE.Mesh(
+        new THREE.PlaneGeometry(baseW*scale,baseH*scale),
+        new THREE.MeshBasicMaterial({
+          map:texture, transparent:opacity<1.0, opacity,
+          depthWrite:false, side:THREE.DoubleSide,
+        })
+      );
+      mesh.position.z=baseZ+dz;
+      mesh.renderOrder=order;
+      scene.add(mesh); bgMeshes.push(mesh);
+    });
+  }
+
+  /* Panoramic sphere
+     geo.scale(-1,1,1) flips normals inward — correct UV orientation without BackSide mirroring issues */
+  function buildPanoSphere(texture){
+    const geo=new THREE.SphereGeometry(250,isMobile?32:60,isMobile?16:40);
+    geo.scale(-1,1,1); // normals face inward, correct UV wrap
+    const mesh=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:texture,depthWrite:false}));
+    scene.add(mesh); bgMeshes.push(mesh);
+    scene.fog=null; // fog would black out a radius-250 sphere
+  }
+
+  function _onMediaLoaded(){
+    setSceneVisible(false);
+    el('m-clear')?.classList.remove('hidden');
+    fadeStatus(1800);
+  }
+
+  function loadBgImage(src){
+    setStatus('LOADING IMAGE...');
+    new THREE.TextureLoader().load(src, tex=>{
+      clearMedia(false);
+      bgTexture=tex;
+      const asp=tex.image.width/tex.image.height;
+      if(asp>=1.8){ buildPanoSphere(tex); setStatus('PANORAMA LOADED'); }
+      else         { buildDepthLayers(tex,asp); setStatus('IMAGE LOADED'); }
+      _onMediaLoaded();
+    }, undefined, ()=>{ setStatus('IMAGE LOAD FAILED'); fadeStatus(2000); });
+  }
+
+  async function loadBgVideo(file){
+    setStatus('LOADING VIDEO...');
+    clearMedia(false);
+    bgVideoEl=document.createElement('video');
+    bgVideoEl.loop=true; bgVideoEl.muted=true;
+    bgVideoEl.playsInline=true; bgVideoEl.autoplay=true;
+    bgVideoEl.style.display='none';
+    document.body.appendChild(bgVideoEl);
+    bgVideoEl.src=URL.createObjectURL(file);
+    try{
+      await new Promise((res,rej)=>{ bgVideoEl.onloadedmetadata=res; bgVideoEl.onerror=()=>rej(new Error('meta failed')); });
+      await bgVideoEl.play();
+      const tex=new THREE.VideoTexture(bgVideoEl);
+      tex.minFilter=THREE.LinearFilter; tex.magFilter=THREE.LinearFilter;
+      bgTexture=tex;
+      const asp=bgVideoEl.videoWidth/bgVideoEl.videoHeight;
+      if(asp>=1.8){ buildPanoSphere(tex); setStatus('360° VIDEO'); }
+      else         { buildDepthLayers(tex,asp); setStatus('VIDEO LOADED'); }
+      _onMediaLoaded();
+    } catch(err){
+      console.error('Video error:',err);
+      setStatus('VIDEO LOAD FAILED'); fadeStatus(2000);
+      if(bgVideoEl){ bgVideoEl.remove(); bgVideoEl=null; }
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════
+     CAMERA PREVIEW (desktop)
+  ═══════════════════════════════════════════════════ */
+  const videoEl    = el('webcam');
+  const previewEl  = el('preview');
+  const previewCv  = el('preview-canvas');
+  const previewCtx = previewCv.getContext('2d');
+
+  function drawPreview(){
+    if(!previewEl.classList.contains('vis')) return;
+    if(videoEl.readyState<2) return;
+    try{
+      previewCtx.save(); previewCtx.scale(-1,1);
+      previewCtx.drawImage(videoEl,-160,0,160,120);
+      previewCtx.restore();
+    }catch(_){}
+    if(latestNose){
+      previewCtx.beginPath();
+      previewCtx.arc(latestNose.x*160,latestNose.y*120,5,0,Math.PI*2);
+      previewCtx.fillStyle='#00ff88'; previewCtx.shadowColor='#00ff88'; previewCtx.shadowBlur=10;
+      previewCtx.fill(); previewCtx.shadowBlur=0;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════
+     CAMERA MANAGEMENT — direct getUserMedia
+  ═══════════════════════════════════════════════════ */
+  let currentStream=null, faceMeshInst=null, trackInterval=null;
+  const camD=el('cam-select-d'), camM=el('cam-select-m');
+
+  async function populateCams(){
+    try{
+      const devs=await navigator.mediaDevices.enumerateDevices();
+      const cams=devs.filter(d=>d.kind==='videoinput');
+      const html=cams.length
+        ? cams.map((c,i)=>`<option value="${c.deviceId}">${c.label||'Camera '+(i+1)}</option>`).join('')
+        : '<option value="">No cameras found</option>';
+      if(camD) camD.innerHTML=html; if(camM) camM.innerHTML=html;
+    }catch(e){
+      const f='<option value="">Camera unavailable</option>';
+      if(camD) camD.innerHTML=f; if(camM) camM.innerHTML=f;
+    }
+  }
+
+  async function startCam(deviceId){
+    if(isFile){
+      setStatus('FILE:// — TOUCH / DEMO');
+      const r='<option value="">Requires HTTPS</option>';
+      if(camD) camD.innerHTML=r; if(camM) camM.innerHTML=r;
+      startDemo(); return;
+    }
+    if(currentStream){currentStream.getTracks().forEach(t=>t.stop());currentStream=null;}
+    if(trackInterval){clearInterval(trackInterval);trackInterval=null;}
+    setStatus('STARTING CAM...');
+    try{
+      currentStream=await navigator.mediaDevices.getUserMedia({
+        video:{width:{ideal:320},height:{ideal:240},frameRate:{ideal:30},
+               ...(deviceId?{deviceId:{exact:deviceId}}:{})},
+      });
+      videoEl.srcObject=currentStream;
+      await new Promise((res,rej)=>{videoEl.onloadeddata=res;videoEl.onerror=rej;videoEl.play().catch(rej);});
+      await populateCams();
+      const aid=currentStream.getVideoTracks()[0]?.getSettings()?.deviceId;
+      if(aid){if(camD)camD.value=aid;if(camM)camM.value=aid;}
+      setStatus('INIT TRACKING...');
+      await startFaceMesh();
+    }catch(err){
+      console.error('Camera error:',err);
+      setStatus('NO CAM — DEMO MODE'); startDemo();
+    }
+  }
+
+  async function startFaceMesh(){
+    if(!faceMeshInst){
+      faceMeshInst=new FaceMesh({
+        locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/${f}`
+      });
+      faceMeshInst.setOptions({maxNumFaces:1,refineLandmarks:false,minDetectionConfidence:0.5,minTrackingConfidence:0.5});
+      faceMeshInst.onResults(onFace);
+      try{await faceMeshInst.initialize();}catch(e){console.warn('FaceMesh init:',e);}
+    }
+    calibrated=false;
+    const ms=isMobile?100:66;
+    trackInterval=setInterval(async()=>{
+      if(videoEl.readyState<2) return;
+      try{await faceMeshInst.send({image:videoEl});countT();}catch(_){}
+    },ms);
+    setStatus('TRACKING'); fadeStatus(2500);
+    const badge=document.querySelector('.mode-badge');
+    if(badge){badge.className='mode-badge cam';badge.textContent='CAM';}
+  }
+
+  function onFace(results){
+    if(!results.multiFaceLandmarks?.length){latestNose=null;return;}
+    const nose=results.multiFaceLandmarks[0][1]; // index 1 = nose tip
+    latestNose={x:nose.x,y:nose.y};
+    if(!calibrated){refNoseX=nose.x;refNoseY=nose.y;calibrated=true;return;}
+    headRaw.x=-(nose.x-refNoseX)*2.5;
+    headRaw.y=-(nose.y-refNoseY)*2.5;
+  }
+
+  /* ── GYROSCOPE ── */
+  async function enableGyro(){
+    const btn=el('m-gyro');
+    if(isFile){
+      let fired=false;
+      const test=()=>{fired=true;};
+      window.addEventListener('devicemotion',test,{once:true});
+      await new Promise(r=>setTimeout(r,500));
+      window.removeEventListener('devicemotion',test);
+      if(!fired){
+        setStatus('GYRO NEEDS HTTPS');
+        if(btn){btn.textContent='Requires HTTPS';btn.style.opacity='0.5';}
+        el('file-warning')?.classList.add('show'); return;
+      }
+    }
+    if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
+      try{
+        const perm=await DeviceOrientationEvent.requestPermission();
+        if(perm!=='granted'){setStatus('GYRO DENIED');if(btn){btn.textContent='Permission Denied';btn.style.opacity='0.5';}return;}
+      }catch(e){setStatus('GYRO ERROR');if(btn){btn.textContent='Gyro Error';btn.style.opacity='0.5';}return;}
+    }
+    gyroBaseG=null;gyroBaseB=null;gyroActive=true;
+    window.addEventListener('deviceorientation',e=>{
+      if(e.gamma===null) return;
+      if(gyroBaseG===null){gyroBaseG=e.gamma||0;gyroBaseB=e.beta||0;return;}
+      headRaw.x=Math.max(-1.5,Math.min(1.5,(e.gamma-gyroBaseG)/38));
+      headRaw.y=Math.max(-1.5,Math.min(1.5,(e.beta-gyroBaseB)/38));
+      countT();
+    },true);
+    setStatus('GYRO ACTIVE'); fadeStatus(2000);
+    if(btn){btn.textContent='Gyro Active';btn.classList.add('pri');}
+    const badge=el('touch-badge');
+    if(badge){badge.className='mode-badge gyro';badge.textContent='GYRO';}
+  }
+
+  /* ── TOUCH DRAG ── */
+  let sheetOpen=false;
+  document.addEventListener('touchmove',e=>{
+    if(!isMobile||!CFG.touchDrag||sheetOpen||gyroActive) return;
+    if(el('mobile-sheet')?.contains(e.target)) return;
+    e.preventDefault();
+    const t=e.touches[0];
+    headRaw.x=((t.clientX/window.innerWidth)-0.5)*2*CFG.sensitivity;
+    headRaw.y=((t.clientY/window.innerHeight)-0.5)*2*CFG.sensitivity;
+    countT();
+  },{passive:false});
+  document.addEventListener('touchend',e=>{
+    if(!isMobile||!CFG.touchDrag||sheetOpen||gyroActive) return;
+    if(el('mobile-sheet')?.contains(e.target)) return;
+    headRaw.x*=0.4; headRaw.y*=0.4;
+  },{passive:true});
+
+  /* ── DEMO MODE ── */
+  let demoInterval=null;
+  function startDemo(){
+    let t=0;
+    if(trackInterval){clearInterval(trackInterval);trackInterval=null;}
+    if(demoInterval){clearInterval(demoInterval);demoInterval=null;}
+    demoInterval=setInterval(()=>{
+      t+=0.013;
+      if(isMobile&&CFG.touchDrag) return;
+      headRaw.x=Math.sin(t*0.60)*0.40;
+      headRaw.y=Math.sin(t*0.42)*0.25;
+    },16);
+    fadeStatus(3000);
+  }
+
+  function recalibrate(){
+    calibrated=false;gyroBaseG=null;gyroBaseB=null;headRaw.x=0;headRaw.y=0;
+    setStatus('RECALIBRATING...'); fadeStatus(1500);
+  }
+
+  /* ── SETTINGS BINDINGS ── */
+  function bindSliders(dId,mId,dVId,mVId,key,dec){
+    const dEl=el(dId),mEl=el(mId),dV=el(dVId),mV=el(mVId);
+    const set=v=>{CFG[key]=v;const s=v.toFixed(dec);if(dEl)dEl.value=v;if(mEl)mEl.value=v;if(dV)dV.textContent=s;if(mV)mV.textContent=s;};
+    set(CFG[key]);
+    const h=e=>set(parseFloat(e.target.value));
+    if(dEl)dEl.addEventListener('input',h); if(mEl)mEl.addEventListener('input',h);
+  }
+  bindSliders('d-sens',  'm-sens',  'd-sens-v',  'm-sens-v',  'sensitivity',2);
+  bindSliders('d-depth', 'm-depth', 'd-depth-v', 'm-depth-v', 'depthScale', 2);
+  bindSliders('d-smooth','m-smooth','d-smooth-v','m-smooth-v','smoothing',   3);
+  function bindChecks(dId,mId,key){
+    const dEl=el(dId),mEl=el(mId);
+    const h=e=>{CFG[key]=e.target.checked;if(dEl)dEl.checked=CFG[key];if(mEl)mEl.checked=CFG[key];};
+    if(dEl)dEl.addEventListener('change',h); if(mEl)mEl.addEventListener('change',h);
+  }
+  bindChecks('d-flipy','m-flipy','flipY');
+
+  function onCamChange(e){
+    if(!e.target.value) return;
+    setStatus('SWITCHING CAM...'); faceMeshInst=null; startCam(e.target.value);
+  }
+  camD?.addEventListener('change',onCamChange);
+  camM?.addEventListener('change',onCamChange);
+
+  el('m-touch')?.addEventListener('change',e=>{
+    CFG.touchDrag=e.target.checked;
+    const badge=el('touch-badge'); if(badge) badge.textContent=CFG.touchDrag?'ON':'OFF';
+  });
+
+  /* ── FILE INPUTS ── */
+  el('file-img')?.addEventListener('change',e=>{const f=e.target.files[0];if(f)loadBgImage(URL.createObjectURL(f));e.target.value='';});
+  el('file-vid')?.addEventListener('change',e=>{const f=e.target.files[0];if(f)loadBgVideo(f);e.target.value='';});
+
+  /* ── MOBILE SHEET ── */
+  const mSheet=el('mobile-sheet'), mHandle=el('sheet-handle');
+  function toggleSheet(){sheetOpen=!sheetOpen;mSheet?.classList.toggle('open',sheetOpen);}
+  mHandle?.addEventListener('click',toggleSheet);
+  let swipeY=0;
+  mSheet?.addEventListener('touchstart',e=>{swipeY=e.touches[0].clientY;},{passive:true});
+  mSheet?.addEventListener('touchend',  e=>{if(e.changedTouches[0].clientY-swipeY>60&&sheetOpen)toggleSheet();},{passive:true});
+  el('m-gyro')?.addEventListener('click', enableGyro);
+  el('m-recal')?.addEventListener('click',recalibrate);
+  el('m-img')?.addEventListener('click',  ()=>{el('file-img')?.click();if(sheetOpen)toggleSheet();});
+  el('m-vid')?.addEventListener('click',  ()=>{el('file-vid')?.click();if(sheetOpen)toggleSheet();});
+  el('m-clear')?.addEventListener('click',()=>{clearMedia(true);if(sheetOpen)toggleSheet();});
+  el('file-warning-close')?.addEventListener('click',()=>el('file-warning')?.classList.remove('show'));
+
+  /* ── DESKTOP KEYBOARD ── */
+  const settingsEl=el('settings'), hintEl=el('hint');
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='SELECT'||e.target.tagName==='INPUT') return;
+    switch(e.key.toLowerCase()){
+      case 's': settingsEl.style.display=settingsEl.style.display==='block'?'none':'block'; break;
+      case 'c': previewEl?.classList.toggle('vis'); break;
+      case 'i': el('file-img')?.click(); break;
+      case 'v': el('file-vid')?.click(); break;
+      case 'x': clearMedia(true); break;
+      case 'r': recalibrate(); break;
+    }
+  });
+
+  /* ── DRAG & DROP ── */
+  const dragOv=el('drag-overlay'); let dTimer;
+  document.addEventListener('dragenter',e=>{e.preventDefault();dragOv?.classList.add('on');});
+  document.addEventListener('dragover', e=>{e.preventDefault();clearTimeout(dTimer);});
+  document.addEventListener('dragleave',()=>{dTimer=setTimeout(()=>dragOv?.classList.remove('on'),100);});
+  document.addEventListener('drop',e=>{
+    e.preventDefault(); dragOv?.classList.remove('on');
+    const f=e.dataTransfer?.files?.[0]; if(!f) return;
+    if(f.type.startsWith('image/')) loadBgImage(URL.createObjectURL(f));
+    else if(f.type.startsWith('video/')) loadBgVideo(f);
+  });
+
+  /* ── RESIZE ── */
+  window.addEventListener('resize',()=>{
+    cam3.aspect=window.innerWidth/window.innerHeight;
+    cam3.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+  });
+
+  /* ── ANIMATION LOOP — capped at targetFPS ── */
+  const clock=new THREE.Clock();
+  let lastFrame=0;
+  const FRAME_MS=1000/CFG.targetFPS;
+  setTimeout(()=>{if(hintEl)hintEl.style.opacity='0';},9000);
+
+  function tick(now){
+    requestAnimationFrame(tick);
+    if(now-lastFrame<FRAME_MS) return;
+    lastFrame=now;
+
+    const t=clock.getElapsedTime();
+    const a=CFG.smoothing;
+    headSmooth.x+=(headRaw.x-headSmooth.x)*a;
+    headSmooth.y+=(headRaw.y-headSmooth.y)*a;
+
+    applyOffAxis(headSmooth.x,headSmooth.y);
+
+    for(const f of floaters){f.rotation.x+=f.userData.rot.x;f.rotation.y+=f.userData.rot.y;f.rotation.z+=f.userData.rot.z;}
+
+    // Star rotation: = not += (avoids infinite drift)
+    starLayers[0].rotation.y=t*0.0008;
+    if(starLayers[1]) starLayers[1].rotation.y=t*0.0015;
+    if(starLayers[2]) starLayers[2].rotation.y=t*0.0030;
+
+    for(const n of nebulae){
+      n.position.x=n.userData.cx+Math.sin(t*0.028+n.userData.ph)*0.05;
+      n.position.y=n.userData.cy+Math.cos(t*0.020+n.userData.ph)*0.03;
+    }
+    for(const g of nebGlows){
+      g.position.x=g.userData.ox+Math.sin(t*0.028+g.userData.ph)*0.04;
+      g.position.y=g.userData.oy+Math.cos(t*0.020+g.userData.ph)*0.025;
+    }
+
+    drawPreview();
+    renderer.render(scene,cam3);
+    countR();
+  }
+
+  /* ── BOOT ── */
+  function boot(){
+    if(typeof FaceMesh==='undefined'){setTimeout(boot,200);return;}
+    if(isFile&&isMobile){
+      setStatus('FILE:// — TOUCH ACTIVE');
+      setTimeout(()=>el('file-warning')?.classList.add('show'),1500);
+    }
+    startCam(null);
+  }
+
+  requestAnimationFrame(tick);
+  boot();
+  </script>
 </body>
 </html>
