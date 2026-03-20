@@ -309,18 +309,38 @@
   const cam3 = new THREE.PerspectiveCamera(CFG.fov, window.innerWidth/window.innerHeight, 0.1, 800);
   cam3.position.set(0, 0, 5);
 
+  // Ambient + directional light needed for MeshStandardMaterial media planes
+  // Intensity 1.0 ambient makes the material display at full texture brightness
+  const sceneAmbient = new THREE.AmbientLight(0xffffff, 1.0);
+  const sceneDir     = new THREE.DirectionalLight(0xffffff, 0.0); // off by default, model loader uses its own
+  scene.add(sceneAmbient, sceneDir);
+
   /* ── OFF-AXIS PROJECTION — the core window illusion ── */
   function applyOffAxis(hx, hy) {
-    // Z depth: lean closer → face gets bigger → eyeDist increases → narrower FOV (zoom in)
-    // Clamp: min 35° (very close) max 90° (very far)
-    const effectiveFov = Math.max(35, Math.min(90, CFG.fov - headSmooth.z * 18));
+    if(isPanoActive){
+      // Panoramic mode: rotate camera to look around inside the sphere.
+      // Off-axis frustum shift is imperceptible at radius 250.
+      // Euler rotation order YXZ: yaw first, then pitch.
+      cam3.rotation.order = 'YXZ';
+      cam3.rotation.y = -hx * 0.35;  // head right → camera yaws right
+      cam3.rotation.x =  hy * 0.25;  // head up    → camera pitches up
+      cam3.rotation.z =  0;
+      // Use standard symmetric projection (no frustum shift) for pano
+      cam3.updateProjectionMatrix();
+      return;
+    }
+
+    // Flat mode — asymmetric frustum shift (off-axis projection)
+    // Z scales parallax strength: lean in → stronger depth separation
+    const depthFactor = 1 + headSmooth.z * 0.4;
     const asp   = window.innerWidth / window.innerHeight;
-    const fovR  = THREE.MathUtils.degToRad(effectiveFov);
+    const fovR  = THREE.MathUtils.degToRad(cam3.fov);
     const halfH = Math.tan(fovR * 0.5) * cam3.near;
     const halfW = halfH * asp;
-    const k     = CFG.sensitivity * CFG.depthScale;
+    const k     = CFG.sensitivity * CFG.depthScale * depthFactor;
     const sx    =  hx * halfW * k;
     const sy    = (CFG.flipY ? -hy : hy) * halfH * k;
+    cam3.rotation.set(0, 0, 0); // clear any leftover pano rotation
     cam3.projectionMatrix.makePerspective(
       -halfW - sx,  halfW - sx,
        halfH - sy, -halfH - sy,
@@ -337,7 +357,9 @@
     const g = ctx.createRadialGradient(size*.5,size*.5,0,size*.5,size*.5,size*.5);
     stops.forEach(([t,c]) => g.addColorStop(t,c));
     ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
-    return new THREE.CanvasTexture(cv);
+    const tex = new THREE.CanvasTexture(cv);
+    tex.encoding = THREE.sRGBEncoding; // canvas outputs sRGB — mark it correctly
+    return tex;
   }
   const starTex = radialTex(48,[
     [0,'rgba(255,255,255,1)'],[0.15,'rgba(255,255,255,0.90)'],
@@ -457,6 +479,7 @@
     nebulae.forEach(n=>{n.visible=v;});
     nebGlows.forEach(g=>{g.visible=v;});
     floaters.forEach(f=>{f.visible=v;});
+    starLayers.forEach(s=>{s.visible=v;}); // stars also hidden when media is active
   }
 
   function restoreFog(){ scene.fog=new THREE.FogExp2(0x020010,isMobile?0.007:0.009); }
@@ -471,6 +494,7 @@
     bgMeshes.length=0;
     if(bgVideoEl){ bgVideoEl.pause(); bgVideoEl.removeAttribute('src'); bgVideoEl.load(); bgVideoEl.remove(); bgVideoEl=null; }
     clearModel(); // also clear any loaded 3D model + its lights
+    isPanoActive = false; // restore normal off-axis mode
     if(restoreScene){
       setSceneVisible(true); restoreFog();
       el('m-clear')?.classList.add('hidden');
@@ -478,43 +502,60 @@
     }
   }
 
-  /* 3-plane depth layering for flat images/video
-     All 3 planes use the same texture at different Z depths.
-     Off-axis projection shifts closer planes more → parallax depth illusion.
-     Scales are corrected so all planes appear the same size at rest (cam at z=5). */
+  /* 5-plane depth layering for flat images/video (Step 7: upgraded from 3 planes)
+     MeshStandardMaterial (roughness=1, metalness=0) is purely diffuse and goes through
+     the renderer's tone mapping pipeline — MeshBasicMaterial bypasses it entirely.
+     Off-axis projection shifts closer planes more than farther ones → depth illusion. */
   function buildDepthLayers(texture, asp){
-    const baseH=18, baseW=baseH*asp, baseZ=-15;
-    // cam-to-plane distances at rest: bg=23 mid=20 fg=17
-    // apparent size ∝ 1/distance → scale to match mid: 23/20 | 1.00 | 17/20
+    const baseH = 18, baseW = baseH * asp;
+    // Camera at z=5. Cam-to-plane distances and compensating scales:
+    // 5-(-20) = 25 → scale 25/20 = 1.25   (deep bg)
+    // 5-(-18) = 23 → scale 23/20 = 1.15   (bg)
+    // 5-(-15) = 20 → scale 20/20 = 1.00   (mid — reference)
+    // 5-(-12) = 17 → scale 17/20 = 0.85   (fg)
+    // 5-(-10) = 15 → scale 15/20 = 0.75   (near fg)
     [
-      {dz:-3, scale:1.15, opacity:0.60, order:0},  // background
-      {dz: 0, scale:1.00, opacity:1.00, order:1},  // midground (main)
-      {dz:+3, scale:0.85, opacity:0.30, order:2},  // foreground (depth cue)
-    ].forEach(({dz,scale,opacity,order})=>{
-      const mesh=new THREE.Mesh(
-        new THREE.PlaneGeometry(baseW*scale,baseH*scale),
-        new THREE.MeshBasicMaterial({
-          map:texture, transparent:opacity<1.0, opacity,
-          depthWrite:false, side:THREE.DoubleSide,
-        })
+      { z:-20, scale:1.25, opacity:0.40, order:0 },  // deep background
+      { z:-18, scale:1.15, opacity:0.65, order:1 },  // background
+      { z:-15, scale:1.00, opacity:1.00, order:2 },  // midground (main, fullscreen)
+      { z:-12, scale:0.85, opacity:0.35, order:3 },  // foreground
+      { z:-10, scale:0.75, opacity:0.15, order:4 },  // near foreground
+    ].forEach(({z, scale, opacity, order})=>{
+      const mat = new THREE.MeshStandardMaterial({
+        map: texture,
+        roughness: 1,
+        metalness: 0,
+        transparent: opacity < 1.0,
+        opacity,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      });
+      const mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(baseW * scale, baseH * scale),
+        mat
       );
-      mesh.position.z=baseZ+dz;
-      mesh.renderOrder=order;
+      mesh.position.z = z;
+      mesh.renderOrder = order;
       scene.add(mesh); bgMeshes.push(mesh);
     });
   }
 
   /* Panoramic sphere
-     geo.scale(-1,1,1) flips normals inward — correct UV orientation without BackSide mirroring issues
-     EquirectangularReflectionMapping tells Three.js how to sample the 360° texture correctly */
+     geo.scale(-1,1,1) flips normals inward.
+     Default UV mapping (THREE.UVMapping) correctly wraps equirectangular textures
+     on an inverted sphere — do NOT use EquirectangularReflectionMapping here,
+     that flag is for cubemap reflections and breaks sphere UV sampling. */
+  let isPanoActive = false; // used by applyOffAxis to switch to cam rotation mode
+
   function buildPanoSphere(texture){
     texture.encoding = THREE.sRGBEncoding;
-    texture.mapping  = THREE.EquirectangularReflectionMapping; // correct 360° sampling
-    const geo=new THREE.SphereGeometry(250, isMobile?48:64, isMobile?24:32);
-    geo.scale(-1,1,1); // normals face inward, correct UV wrap for equirectangular
-    const mesh=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:texture,depthWrite:false}));
+    // texture.mapping intentionally left as default THREE.UVMapping
+    const geo = new THREE.SphereGeometry(250, isMobile ? 48 : 64, isMobile ? 24 : 32);
+    geo.scale(-1, 1, 1); // inward normals, correct UV wrap
+    const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({map:texture, depthWrite:false}));
     scene.add(mesh); bgMeshes.push(mesh);
-    scene.fog=null; // fog would black out a radius-250 sphere
+    scene.fog = null;
+    isPanoActive = true;
   }
 
   function _onMediaLoaded(){
@@ -716,8 +757,8 @@
       refNoseX=nose.x; refNoseY=nose.y; refEyeDist=eyeDist;
       calibrated=true; return;
     }
-    headRaw.x=-(nose.x-refNoseX)*2.5;
-    headRaw.y=-(nose.y-refNoseY)*2.5;
+    headRaw.x = -(nose.x - refNoseX) * 2.5 * CFG.sensitivity;
+    headRaw.y = -(nose.y - refNoseY) * 2.5 * CFG.sensitivity;
     // Z: positive = face bigger = leaning in = zoom in effect
     // Clamp to ±1.5 to avoid extreme zoom
     headRaw.z=Math.max(-1.5,Math.min(1.5,(eyeDist-refEyeDist)*8));
@@ -903,12 +944,11 @@
 
     applyOffAxis(headSmooth.x,headSmooth.y);
 
-    // 3D model parallax — shifts with head, tilts slightly for realism
+    // 3D model — rotation only (off-axis projection handles the parallax)
+    // Translation would fight the frustum shift and look broken
     if(modelGroup){
-      modelGroup.position.x=headSmooth.x*2.0;
-      modelGroup.position.y=headSmooth.y*1.5;
-      modelGroup.rotation.y=headSmooth.x*0.25;
-      modelGroup.rotation.x=-headSmooth.y*0.15;
+      modelGroup.rotation.y =  headSmooth.x * 0.25;
+      modelGroup.rotation.x = -headSmooth.y * 0.15;
     }
 
     for(const f of floaters){f.rotation.x+=f.userData.rot.x;f.rotation.y+=f.userData.rot.y;f.rotation.z+=f.userData.rot.z;}
