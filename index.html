@@ -157,7 +157,7 @@
     style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;"></video>
 
   <div id="status">INITIALIZING...</div>
-  <div id="hint">[ S ] settings &nbsp;·&nbsp; [ C ] cam &nbsp;·&nbsp; [ I ] image &nbsp;·&nbsp; [ V ] video &nbsp;·&nbsp; [ X ] clear &nbsp;·&nbsp; [ R ] recal</div>
+  <div id="hint">[ S ] settings &nbsp;·&nbsp; [ C ] cam &nbsp;·&nbsp; [ I ] image &nbsp;·&nbsp; [ V ] video &nbsp;·&nbsp; [ M ] model &nbsp;·&nbsp; [ X ] clear &nbsp;·&nbsp; [ R ] recal</div>
 
   <div id="file-warning">
     <h4>Limited Mode</h4>
@@ -183,8 +183,8 @@
     <div class="fps-row"><span>Track FPS</span><span class="fval" id="d-fps-track">--</span></div>
     <hr class="div">
     <div class="keys">
-      <kbd>S</kbd> panel &nbsp;<kbd>C</kbd> cam preview &nbsp;<kbd>I</kbd> image &nbsp;<kbd>V</kbd> video &nbsp;<kbd>X</kbd> clear<br>
-      <kbd>R</kbd> recalibrate &nbsp; drag image or video onto window
+      <kbd>S</kbd> panel &nbsp;<kbd>C</kbd> cam preview &nbsp;<kbd>I</kbd> image &nbsp;<kbd>V</kbd> video &nbsp;<kbd>M</kbd> model &nbsp;<kbd>X</kbd> clear<br>
+      <kbd>R</kbd> recalibrate &nbsp; drag image, video, or .glb onto window
     </div>
   </div>
 
@@ -213,6 +213,7 @@
       <div class="sh-sec">Media</div>
       <button class="m-btn" id="m-img">Load Image</button>
       <button class="m-btn" id="m-vid">Load Video</button>
+      <button class="m-btn" id="m-model">Load Model (.glb)</button>
       <button class="m-btn warn hidden" id="m-clear">Clear Media</button>
 
       <div class="sh-sec">Camera</div>
@@ -231,12 +232,14 @@
     </div>
   </div>
 
-  <div id="drag-overlay">Drop Image / Video</div>
+  <div id="drag-overlay">Drop Image / Video / GLB</div>
   <input type="file" id="file-img" accept="image/*" style="display:none">
   <input type="file" id="file-vid" accept="video/mp4,video/webm" style="display:none">
+  <input type="file" id="file-model" accept=".glb,.gltf" style="display:none">
 
   <!-- UMD CDN scripts — no modules, no importmap, maximum compatibility -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" crossorigin="anonymous"></script>
 
   <script>
@@ -262,9 +265,9 @@
   };
 
   /* ── HEAD STATE ── */
-  const headRaw    = { x: 0, y: 0 };
-  const headSmooth = { x: 0, y: 0 };
-  let refNoseX = 0.5, refNoseY = 0.5;
+  const headRaw    = { x: 0, y: 0, z: 0 };
+  const headSmooth = { x: 0, y: 0, z: 0 };
+  let refNoseX = 0.5, refNoseY = 0.5, refEyeDist = 0;
   let calibrated = false;
   let latestNose = null;
   let gyroBaseG  = null, gyroBaseB = null;
@@ -294,7 +297,9 @@
   renderer.domElement.id = 'three';
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(1);
-  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.outputEncoding      = THREE.sRGBEncoding;        // r128 API (correct for this version)
+  renderer.toneMapping         = THREE.ACESFilmicToneMapping; // cinematic color grading
+  renderer.toneMappingExposure = 1.1;                        // slight boost — not blown out
   renderer.setClearColor(0x020010, 1);
   document.body.appendChild(renderer.domElement);
 
@@ -306,8 +311,11 @@
 
   /* ── OFF-AXIS PROJECTION — the core window illusion ── */
   function applyOffAxis(hx, hy) {
+    // Z depth: lean closer → face gets bigger → eyeDist increases → narrower FOV (zoom in)
+    // Clamp: min 35° (very close) max 90° (very far)
+    const effectiveFov = Math.max(35, Math.min(90, CFG.fov - headSmooth.z * 18));
     const asp   = window.innerWidth / window.innerHeight;
-    const fovR  = THREE.MathUtils.degToRad(cam3.fov);
+    const fovR  = THREE.MathUtils.degToRad(effectiveFov);
     const halfH = Math.tan(fovR * 0.5) * cam3.near;
     const halfW = halfH * asp;
     const k     = CFG.sensitivity * CFG.depthScale;
@@ -462,6 +470,7 @@
     });
     bgMeshes.length=0;
     if(bgVideoEl){ bgVideoEl.pause(); bgVideoEl.removeAttribute('src'); bgVideoEl.load(); bgVideoEl.remove(); bgVideoEl=null; }
+    clearModel(); // also clear any loaded 3D model + its lights
     if(restoreScene){
       setSceneVisible(true); restoreFog();
       el('m-clear')?.classList.add('hidden');
@@ -496,10 +505,13 @@
   }
 
   /* Panoramic sphere
-     geo.scale(-1,1,1) flips normals inward — correct UV orientation without BackSide mirroring issues */
+     geo.scale(-1,1,1) flips normals inward — correct UV orientation without BackSide mirroring issues
+     EquirectangularReflectionMapping tells Three.js how to sample the 360° texture correctly */
   function buildPanoSphere(texture){
-    const geo=new THREE.SphereGeometry(250,isMobile?32:60,isMobile?16:40);
-    geo.scale(-1,1,1); // normals face inward, correct UV wrap
+    texture.encoding = THREE.sRGBEncoding;
+    texture.mapping  = THREE.EquirectangularReflectionMapping; // correct 360° sampling
+    const geo=new THREE.SphereGeometry(250, isMobile?48:64, isMobile?24:32);
+    geo.scale(-1,1,1); // normals face inward, correct UV wrap for equirectangular
     const mesh=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:texture,depthWrite:false}));
     scene.add(mesh); bgMeshes.push(mesh);
     scene.fog=null; // fog would black out a radius-250 sphere
@@ -515,6 +527,7 @@
     setStatus('LOADING IMAGE...');
     new THREE.TextureLoader().load(src, tex=>{
       clearMedia(false);
+      tex.encoding = THREE.sRGBEncoding; // correct color space — prevents washed-out look
       bgTexture=tex;
       const asp=tex.image.width/tex.image.height;
       if(asp>=1.8){ buildPanoSphere(tex); setStatus('PANORAMA LOADED'); }
@@ -537,6 +550,7 @@
       await bgVideoEl.play();
       const tex=new THREE.VideoTexture(bgVideoEl);
       tex.minFilter=THREE.LinearFilter; tex.magFilter=THREE.LinearFilter;
+      tex.encoding=THREE.sRGBEncoding; // correct color space for video
       bgTexture=tex;
       const asp=bgVideoEl.videoWidth/bgVideoEl.videoHeight;
       if(asp>=1.8){ buildPanoSphere(tex); setStatus('360° VIDEO'); }
@@ -549,9 +563,56 @@
     }
   }
 
-  /* ═══════════════════════════════════════════════════
-     CAMERA PREVIEW (desktop)
-  ═══════════════════════════════════════════════════ */
+  /* ── 3D MODEL — .glb/.gltf with parallax offset ── */
+  let modelGroup  = null;
+  let modelLights = []; // lights added for model, removed on clear
+
+  function clearModel(){
+    if(modelGroup){ scene.remove(modelGroup); modelGroup=null; }
+    modelLights.forEach(l=>scene.remove(l)); modelLights=[];
+  }
+
+  function loadBgModel(file){
+    if(typeof THREE.GLTFLoader==='undefined'){
+      setStatus('GLTF LOADER MISSING'); fadeStatus(2000); return;
+    }
+    setStatus('LOADING MODEL...');
+    clearMedia(false);
+    clearModel();
+    const url=URL.createObjectURL(file);
+    const loader=new THREE.GLTFLoader();
+    loader.load(url, gltf=>{
+      // Center and auto-scale model to fit nicely in scene
+      modelGroup=gltf.scene;
+      const box=new THREE.Box3().setFromObject(modelGroup);
+      const size=box.getSize(new THREE.Vector3());
+      const maxDim=Math.max(size.x,size.y,size.z);
+      const targetSize=8; // world units
+      modelGroup.scale.setScalar(targetSize/maxDim);
+
+      // Re-center after scaling
+      const center=box.getCenter(new THREE.Vector3()).multiplyScalar(targetSize/maxDim);
+      modelGroup.position.sub(center);
+
+      scene.add(modelGroup);
+
+      // Basic lighting so model materials are visible
+      const ambient=new THREE.AmbientLight(0xffffff,0.6);
+      const dirLight=new THREE.DirectionalLight(0xffffff,1.0);
+      dirLight.position.set(5,8,5);
+      scene.add(ambient,dirLight);
+      modelLights.push(ambient,dirLight);
+
+      setSceneVisible(false);
+      el('m-clear')?.classList.remove('hidden');
+      setStatus('MODEL LOADED'); fadeStatus(2000);
+      URL.revokeObjectURL(url);
+    }, undefined, err=>{
+      console.error('Model error:',err);
+      setStatus('MODEL LOAD FAILED'); fadeStatus(2000);
+      URL.revokeObjectURL(url);
+    });
+  }
   const videoEl    = el('webcam');
   const previewEl  = el('preview');
   const previewCv  = el('preview-canvas');
@@ -643,11 +704,23 @@
 
   function onFace(results){
     if(!results.multiFaceLandmarks?.length){latestNose=null;return;}
-    const nose=results.multiFaceLandmarks[0][1]; // index 1 = nose tip
+    const lm=results.multiFaceLandmarks[0];
+    const nose=lm[1]; // nose tip
     latestNose={x:nose.x,y:nose.y};
-    if(!calibrated){refNoseX=nose.x;refNoseY=nose.y;calibrated=true;return;}
+
+    // Eye outer corners — distance is proportional to face size (inverse of Z distance)
+    // lm[33] = left eye outer, lm[263] = right eye outer
+    const eyeDist=Math.hypot(lm[263].x-lm[33].x, lm[263].y-lm[33].y);
+
+    if(!calibrated){
+      refNoseX=nose.x; refNoseY=nose.y; refEyeDist=eyeDist;
+      calibrated=true; return;
+    }
     headRaw.x=-(nose.x-refNoseX)*2.5;
     headRaw.y=-(nose.y-refNoseY)*2.5;
+    // Z: positive = face bigger = leaning in = zoom in effect
+    // Clamp to ±1.5 to avoid extreme zoom
+    headRaw.z=Math.max(-1.5,Math.min(1.5,(eyeDist-refEyeDist)*8));
   }
 
   /* ── GYROSCOPE ── */
@@ -675,8 +748,12 @@
     window.addEventListener('deviceorientation',e=>{
       if(e.gamma===null) return;
       if(gyroBaseG===null){gyroBaseG=e.gamma||0;gyroBaseB=e.beta||0;return;}
-      headRaw.x=Math.max(-1.5,Math.min(1.5,(e.gamma-gyroBaseG)/38));
-      headRaw.y=Math.max(-1.5,Math.min(1.5,(e.beta-gyroBaseB)/38));
+      // In landscape the device is rotated 90° — gamma and beta swap roles
+      const isLandscape=window.innerWidth>window.innerHeight;
+      const dg=(e.gamma-gyroBaseG)/38;
+      const db=(e.beta -gyroBaseB)/38;
+      headRaw.x=Math.max(-1.5,Math.min(1.5, isLandscape ? db  : dg));
+      headRaw.y=Math.max(-1.5,Math.min(1.5, isLandscape ? dg  : db));
       countT();
     },true);
     setStatus('GYRO ACTIVE'); fadeStatus(2000);
@@ -755,6 +832,7 @@
   /* ── FILE INPUTS ── */
   el('file-img')?.addEventListener('change',e=>{const f=e.target.files[0];if(f)loadBgImage(URL.createObjectURL(f));e.target.value='';});
   el('file-vid')?.addEventListener('change',e=>{const f=e.target.files[0];if(f)loadBgVideo(f);e.target.value='';});
+  el('file-model')?.addEventListener('change',e=>{const f=e.target.files[0];if(f)loadBgModel(f);e.target.value='';});
 
   /* ── MOBILE SHEET ── */
   const mSheet=el('mobile-sheet'), mHandle=el('sheet-handle');
@@ -767,6 +845,7 @@
   el('m-recal')?.addEventListener('click',recalibrate);
   el('m-img')?.addEventListener('click',  ()=>{el('file-img')?.click();if(sheetOpen)toggleSheet();});
   el('m-vid')?.addEventListener('click',  ()=>{el('file-vid')?.click();if(sheetOpen)toggleSheet();});
+  el('m-model')?.addEventListener('click',()=>{el('file-model')?.click();if(sheetOpen)toggleSheet();});
   el('m-clear')?.addEventListener('click',()=>{clearMedia(true);if(sheetOpen)toggleSheet();});
   el('file-warning-close')?.addEventListener('click',()=>el('file-warning')?.classList.remove('show'));
 
@@ -779,6 +858,7 @@
       case 'c': previewEl?.classList.toggle('vis'); break;
       case 'i': el('file-img')?.click(); break;
       case 'v': el('file-vid')?.click(); break;
+      case 'm': el('file-model')?.click(); break;
       case 'x': clearMedia(true); break;
       case 'r': recalibrate(); break;
     }
@@ -792,8 +872,9 @@
   document.addEventListener('drop',e=>{
     e.preventDefault(); dragOv?.classList.remove('on');
     const f=e.dataTransfer?.files?.[0]; if(!f) return;
-    if(f.type.startsWith('image/')) loadBgImage(URL.createObjectURL(f));
-    else if(f.type.startsWith('video/')) loadBgVideo(f);
+    if(f.type.startsWith('image/'))       loadBgImage(URL.createObjectURL(f));
+    else if(f.type.startsWith('video/'))  loadBgVideo(f);
+    else if(f.name.match(/\.(glb|gltf)$/i)) loadBgModel(f);
   });
 
   /* ── RESIZE ── */
@@ -818,8 +899,17 @@
     const a=CFG.smoothing;
     headSmooth.x+=(headRaw.x-headSmooth.x)*a;
     headSmooth.y+=(headRaw.y-headSmooth.y)*a;
+    headSmooth.z+=(headRaw.z-headSmooth.z)*a; // Z depth smoothing
 
     applyOffAxis(headSmooth.x,headSmooth.y);
+
+    // 3D model parallax — shifts with head, tilts slightly for realism
+    if(modelGroup){
+      modelGroup.position.x=headSmooth.x*2.0;
+      modelGroup.position.y=headSmooth.y*1.5;
+      modelGroup.rotation.y=headSmooth.x*0.25;
+      modelGroup.rotation.x=-headSmooth.y*0.15;
+    }
 
     for(const f of floaters){f.rotation.x+=f.userData.rot.x;f.rotation.y+=f.userData.rot.y;f.rotation.z+=f.userData.rot.z;}
 
