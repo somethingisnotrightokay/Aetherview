@@ -1,7 +1,6 @@
+# AetherView
 
-# ✨ AetherView
 
-[![GitHub stars](https://img.shields.io/github/stars/somethingisnotrightokay/Aetherview?style=flat-square&logo=github)](https://github.com/somethingisnotrightokay/Aetherview)
 [![Last Commit](https://img.shields.io/github/last-commit/somethingisnotrightokay/Aetherview?style=flat-square)](https://github.com/somethingisnotrightokay/Aetherview)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Made with Three.js](https://img.shields.io/badge/Three.js-r128-000000?style=flat-square&logo=three.js)](https://threejs.org/)
@@ -58,8 +57,10 @@ It uses **off-axis projection**, the same principle found in real-world head-tra
 
 ---
 
-## 🎮 Get Started
+## 🎮 Getting Started:
+It is recomended to use all funcionalities of the tool to go to the GitHub Pages hosted website at **https://somethingisnotrightokay.github.io/Aetherview/**
 
+But, if you really really want it offline, this is what to do:
 ```bash
 # Clone the repository
 git clone https://github.com/somethingisnotrightokay/Aetherview.git
@@ -69,10 +70,14 @@ cd Aetherview
 open index.html
 # or just drag it into your browser
 
+```
+---
+Running it locally means that you will be running it in *Limited Mode* which means that there is No Gyroscope or Camera, which leaves touch/drag as a fallback.
 
+This is because running html files from the `file://` domain does not constitute as a Safe file in most browsers, which means no compatibility.
 ---
 
-💡 How It Works
+## 💡 How It Works
 
 AetherView uses off-axis projection — the camera’s frustum is dynamically shifted based on your head position or device orientation.
 
@@ -81,19 +86,17 @@ This creates true perspective change without moving objects in the scene, produc
 
 ---
 
-📝 License
+## 📝 License
 
 This project is licensed under the MIT License — see the LICENSE file for details.
 
 
 ---
 
-🤝 Contributing
+## 🤝 Contributing
 
 Contributions are welcome!
 Feel free to open issues or submit pull requests.
-
-
 ---
 
 <p align="center">
