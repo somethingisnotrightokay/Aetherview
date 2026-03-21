@@ -241,13 +241,17 @@
       <button class="preset-btn" data-preset="asteroid">Asteroids</button>
       <button class="preset-btn" data-preset="starcluster">Star Cluster</button>
       <button class="preset-btn" data-preset="planet">Planet</button>
+      <button class="preset-btn" data-preset="gasgiant">Gas Giant</button>
+      <button class="preset-btn" data-preset="icemoon">Ice Moon</button>
     </div>
     <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Presets — Geometry &amp; Depth</div>
     <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px;">
       <button class="preset-btn" data-preset="crystal">Crystal</button>
+      <button class="preset-btn" data-preset="crystalv2">Crystal II</button>
       <button class="preset-btn" data-preset="storm">Crystal Storm</button>
       <button class="preset-btn" data-preset="tunnel">Geo Tunnel</button>
       <button class="preset-btn" data-preset="portal">Portal</button>
+      <button class="preset-btn" data-preset="portalv2">Portal II</button>
       <button class="preset-btn" data-preset="wormhole">Wormhole</button>
       <button class="preset-btn" data-preset="swarm">Depth Swarm</button>
       <button class="preset-btn" data-preset="platforms">Platforms</button>
@@ -297,13 +301,17 @@
         <button class="m-btn preset-btn" data-preset="asteroid" style="padding:8px 12px;font-size:10px;">Asteroids</button>
         <button class="m-btn preset-btn" data-preset="starcluster" style="padding:8px 12px;font-size:10px;">Cluster</button>
         <button class="m-btn preset-btn" data-preset="planet" style="padding:8px 12px;font-size:10px;">Planet</button>
+        <button class="m-btn preset-btn" data-preset="gasgiant" style="padding:8px 12px;font-size:10px;">Gas Giant</button>
+        <button class="m-btn preset-btn" data-preset="icemoon" style="padding:8px 12px;font-size:10px;">Ice Moon</button>
       </div>
       <div class="sh-sec">Geometry &amp; Depth</div>
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;">
         <button class="m-btn preset-btn" data-preset="crystal" style="padding:8px 12px;font-size:10px;">Crystal</button>
+        <button class="m-btn preset-btn" data-preset="crystalv2" style="padding:8px 12px;font-size:10px;">Crystal II</button>
         <button class="m-btn preset-btn" data-preset="storm" style="padding:8px 12px;font-size:10px;">Storm</button>
         <button class="m-btn preset-btn" data-preset="tunnel" style="padding:8px 12px;font-size:10px;">Tunnel</button>
         <button class="m-btn preset-btn" data-preset="portal" style="padding:8px 12px;font-size:10px;">Portal</button>
+        <button class="m-btn preset-btn" data-preset="portalv2" style="padding:8px 12px;font-size:10px;">Portal II</button>
         <button class="m-btn preset-btn" data-preset="wormhole" style="padding:8px 12px;font-size:10px;">Wormhole</button>
         <button class="m-btn preset-btn" data-preset="swarm" style="padding:8px 12px;font-size:10px;">Swarm</button>
         <button class="m-btn preset-btn" data-preset="platforms" style="padding:8px 12px;font-size:10px;">Platforms</button>
@@ -1590,132 +1598,140 @@
   }
 
   // ── Planet close-up (Holoscape-style) ──────────────────────────────
-  // Large textured sphere in foreground with atmosphere glow, 3 moons at
-  // different depths and orbital planes, distant star backdrop.
-  // Off-axis projection makes the planet feel HUGE — moving your head reveals
-  // its curvature, the moons at different Z planes shift at different rates.
+  // Massive planet filling the foreground, moons at distinct depths,
+  // volumetric atmosphere, rim lighting, debris field for near parallax.
   function buildPresetPlanet() {
     setSceneVisible(true);
     scene.fog = null;
 
-    // Strong key light from upper-right — hard terminator line
-    const sunLight = new THREE.DirectionalLight(0xfff5e0, 2.8);
-    sunLight.position.set(12, 8, 15);
-    const fillLight = new THREE.AmbientLight(0x0a0820, 0.35);
-    scene.add(sunLight, fillLight);
-    presetMeshes.push(sunLight, fillLight);
+    // Sun — very bright key light from upper-right → hard terminator
+    const sunLight = new THREE.DirectionalLight(0xfff0d0, 4.0);
+    sunLight.position.set(18, 10, 20);
+    // Fill (space ambient — nearly black, slightly blue)
+    const fillLight = new THREE.AmbientLight(0x040820, 0.5);
+    // Rim light — gives planet a glowing edge on the dark side
+    const rimLight = new THREE.DirectionalLight(0x2244aa, 1.2);
+    rimLight.position.set(-14, -4, 10);
+    scene.add(sunLight, fillLight, rimLight);
+    presetMeshes.push(sunLight, fillLight, rimLight);
 
-    // Main planet — large, close, occupies most of view
+    // ── Near-field debris — z = -3 to -6, shifts a LOT under head movement
+    const debrisCols = [0x888899, 0x776688, 0x998877, 0xaaaaaa, 0x6677aa];
+    for(let i = 0; i < 14; i++){
+      const r = 0.04 + Math.random() * 0.18;
+      const geo = i % 3 === 0 ? new THREE.IcosahedronGeometry(r, 0)
+               : i % 3 === 1 ? new THREE.OctahedronGeometry(r)
+               :                new THREE.DodecahedronGeometry(r, 0);
+      const mat = new THREE.MeshStandardMaterial({
+        color: debrisCols[i % debrisCols.length],
+        roughness: 0.92, metalness: 0.08
+      });
+      const m = new THREE.Mesh(geo, mat);
+      m.position.set((Math.random()-0.5)*16, (Math.random()-0.5)*9, -3 - Math.random()*3);
+      m.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0);
+      const rx = (Math.random()-0.5)*0.006, ry = (Math.random()-0.5)*0.009;
+      m.userData.animate = () => { m.rotation.x+=rx; m.rotation.y+=ry; };
+      scene.add(m); presetMeshes.push(m);
+    }
+
+    // ── Main planet — r=7.5, partially offscreen to feel MASSIVE and close
     const planet = new THREE.Mesh(
-      new THREE.SphereGeometry(5.5, 64, 40),
+      new THREE.SphereGeometry(7.5, 80, 52),
       new THREE.MeshStandardMaterial({
-        color: 0x2255aa,
-        emissive: 0x050818,
+        color:    0x1a3f7a,   // deep ocean blue
+        emissive: 0x040d1c,
         emissiveIntensity: 1.0,
-        roughness: 0.88,
+        roughness: 0.82,
         metalness: 0.0,
       })
     );
-    planet.position.set(1.5, -0.8, -12);
-    // Subtle slow axial rotation
-    planet.userData.animate = (t) => { planet.rotation.y = t * 0.06; };
-    scene.add(planet);
-    presetMeshes.push(planet);
+    planet.position.set(2.0, -1.2, -16);
+    planet.userData.animate = t => { planet.rotation.y = t * 0.04; };
+    scene.add(planet); presetMeshes.push(planet);
 
-    // Atmosphere glow — additive layered planes
-    const atmTex1 = radialTex(256, [
-      [0,    'rgba(60,140,255,0.0)'],
-      [0.52, 'rgba(40,100,255,0.0)'],
-      [0.62, 'rgba(60,160,255,0.38)'],
-      [0.72, 'rgba(80,180,255,0.18)'],
-      [0.85, 'rgba(40,100,220,0.07)'],
-      [1,    'rgba(0,0,0,0)'],
-    ]);
-    const atm1 = mkSoftPlane(atmTex1, 14, 14, 1.5, -0.8, -11.5, 0);
-    atm1.userData.animate = (t) => { atm1.material.opacity = 0.65 + Math.sin(t * 0.18) * 0.08; };
-    scene.add(atm1);
-    presetMeshes.push(atm1);
+    // Cloud band — slightly larger sphere overlaid, semi-transparent
+    const cloudMat = new THREE.MeshStandardMaterial({
+      color: 0xddeeff, roughness: 1.0, metalness: 0.0,
+      transparent: true, opacity: 0.10, depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    const clouds = new THREE.Mesh(new THREE.SphereGeometry(7.65, 48, 32), cloudMat);
+    clouds.position.copy(planet.position);
+    clouds.userData.animate = t => { clouds.rotation.y = t * 0.055; clouds.rotation.x = t * 0.008; };
+    scene.add(clouds); presetMeshes.push(clouds);
 
-    // Thin outer halo (very subtle, shifts most under head movement — it's closest)
-    const haloTex = radialTex(128, [
-      [0,    'rgba(80,160,255,0.0)'],
-      [0.60, 'rgba(80,160,255,0.0)'],
-      [0.72, 'rgba(80,160,255,0.22)'],
-      [0.88, 'rgba(60,120,220,0.08)'],
-      [1,    'rgba(0,0,0,0)'],
-    ]);
-    const halo = mkSoftPlane(haloTex, 15.5, 15.5, 1.5, -0.8, -11.2, 0);
-    scene.add(halo);
-    presetMeshes.push(halo);
+    // Atmosphere glow — 4 additive shells building up an edge limb
+    const atmColors = [
+      [[0.42,0.56,0.66,0.70,1.0], [0.0,0.0,0.55,0.22,0.0], 20, 20],
+      [[0.44,0.57,0.68,0.78,1.0], [0.0,0.0,0.38,0.12,0.0], 20.5, 20.5],
+      [[0.47,0.60,0.72,0.82,1.0], [0.0,0.0,0.20,0.06,0.0], 21.5, 21.5],
+    ];
+    atmColors.forEach(([stops, alphas, sw, sh]) => {
+      const cv = document.createElement('canvas'); cv.width = cv.height = 256;
+      const ctx = cv.getContext('2d');
+      const g = ctx.createRadialGradient(128,128,0,128,128,128);
+      stops.forEach((s,i) => g.addColorStop(s, `rgba(80,160,255,${alphas[i]})`));
+      ctx.fillStyle = g; ctx.fillRect(0,0,256,256);
+      const tex = new THREE.CanvasTexture(cv);
+      tex.encoding = THREE.sRGBEncoding;
+      const atm = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh),
+        new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));
+      atm.position.set(2.0,-1.2,-15.4);
+      atm.userData.animate = t => { atm.material.opacity = 0.85 + Math.sin(t*0.14)*0.1; };
+      scene.add(atm); presetMeshes.push(atm);
+    });
 
-    // City lights on dark side — faint warm glow texture
-    const cityTex = radialTex(128, [
-      [0,   'rgba(255,200,80,0.0)'],
-      [0.45,'rgba(255,200,80,0.0)'],
-      [0.52,'rgba(255,200,80,0.12)'],
-      [0.62,'rgba(255,160,40,0.06)'],
-      [1,   'rgba(0,0,0,0)'],
-    ]);
-    const cities = mkSoftPlane(cityTex, 12.5, 12.5, 2.8, -1.8, -11.8, -0.4);
-    scene.add(cities);
-    presetMeshes.push(cities);
+    // Distant sun glow in upper right
+    const sTex = radialTex(128,[[0,'rgba(255,240,180,1.0)'],[0.35,'rgba(255,180,60,0.55)'],[0.7,'rgba(255,100,0,0.18)'],[1,'rgba(0,0,0,0)']]);
+    const sunDisc = mkSoftPlane(sTex,28,28,14,9,-100,0);
+    scene.add(sunDisc); presetMeshes.push(sunDisc);
 
-    // Moon 1 — largest, closest, upper-right
-    const moon1 = new THREE.Mesh(
-      new THREE.SphereGeometry(0.55, 24, 16),
-      new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.95, metalness: 0.0 })
-    );
-    moon1.userData.animate = (t) => {
-      moon1.position.set(
-        1.5 + Math.cos(t * 0.28) * 9.5,
-        -0.8 + Math.sin(t * 0.28) * 2.2,
-        -12 + Math.sin(t * 0.28) * 4.5
+    // Saturn-style ring system — 3 rings at different radii
+    const ringDefs = [
+      {r:11.2,t:0.14,op:0.55,col:0xccbb99},{r:13.0,t:0.22,op:0.35,col:0xbbaa88},{r:15.2,t:0.08,op:0.18,col:0xaa9977}
+    ];
+    ringDefs.forEach((rd,i) => {
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(rd.r, rd.t, 4, 160),
+        new THREE.MeshStandardMaterial({color:rd.col,roughness:0.95,metalness:0.05,transparent:true,opacity:rd.op,depthWrite:false,side:THREE.DoubleSide})
       );
-      moon1.rotation.y = t * 0.12;
-    };
-    scene.add(moon1);
-    presetMeshes.push(moon1);
+      ring.position.set(2.0,-1.2,-16);
+      ring.rotation.x = Math.PI * 0.40;
+      ring.rotation.z = 0.05;
+      ring.userData.animate = t => { ring.rotation.z = 0.05 + t*0.008*(i%2===0?1:-1); };
+      scene.add(ring); presetMeshes.push(ring);
+    });
 
-    // Moon 2 — smaller, farther back, inclined orbital plane
-    const moon2 = new THREE.Mesh(
-      new THREE.SphereGeometry(0.32, 16, 12),
-      new THREE.MeshStandardMaterial({ color: 0xccb888, roughness: 0.90, metalness: 0.0 })
-    );
-    moon2.userData.animate = (t) => {
-      moon2.position.set(
-        1.5 + Math.cos(t * 0.18 + 2.1) * 12,
-        -0.8 + Math.sin(t * 0.22 + 1.0) * 5.5,
-        -12 + Math.sin(t * 0.18 + 2.1) * 6
-      );
+    // Moon 1 — large, close, bright (rock world)
+    const moon1Mat = new THREE.MeshStandardMaterial({color:0xbbbbcc,emissive:0x050508,emissiveIntensity:1.0,roughness:0.94,metalness:0.02});
+    const moon1 = new THREE.Mesh(new THREE.SphereGeometry(0.85,32,22), moon1Mat);
+    moon1.userData.animate = t => {
+      moon1.position.set(2.0 + Math.cos(t*0.22)*13.5, -1.2 + Math.sin(t*0.22)*3.5, -16 + Math.sin(t*0.22)*6.5);
+      moon1.rotation.y = t*0.15;
     };
-    scene.add(moon2);
-    presetMeshes.push(moon2);
+    scene.add(moon1); presetMeshes.push(moon1);
 
-    // Moon 3 — tiny, very close, fast
-    const moon3 = new THREE.Mesh(
-      new THREE.SphereGeometry(0.14, 12, 8),
-      new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.80, metalness: 0.1 })
-    );
-    moon3.userData.animate = (t) => {
-      moon3.position.set(
-        1.5 + Math.cos(t * 0.55 + 4.0) * 7.2,
-        -0.8 + Math.sin(t * 0.55 + 4.0) * 1.5,
-        -12 + Math.sin(t * 0.55 + 4.0) * 2.8
-      );
+    // Moon 1 glow halo
+    const m1hTex = radialTex(64,[[0,'rgba(200,210,255,0.0)'],[0.55,'rgba(200,210,255,0.0)'],[0.72,'rgba(200,210,255,0.22)'],[1,'rgba(0,0,0,0)']]);
+    const m1h = new THREE.Mesh(new THREE.PlaneGeometry(2.8,2.8),new THREE.MeshBasicMaterial({map:m1hTex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));
+    m1h.userData.animate = t => { const p=moon1.position; m1h.position.set(p.x,p.y,p.z+0.1); };
+    scene.add(m1h); presetMeshes.push(m1h);
+
+    // Moon 2 — smaller, inclined orbital plane (ice-blue)
+    const moon2 = new THREE.Mesh(new THREE.SphereGeometry(0.42,20,14),
+      new THREE.MeshStandardMaterial({color:0xaaccee,roughness:0.70,metalness:0.25}));
+    moon2.userData.animate = t => {
+      moon2.position.set(2.0 + Math.cos(t*0.14+2.1)*17.5, -1.2 + Math.sin(t*0.18+1.0)*7.5, -16 + Math.sin(t*0.14+2.1)*8.0);
     };
-    scene.add(moon3);
-    presetMeshes.push(moon3);
+    scene.add(moon2); presetMeshes.push(moon2);
 
-    // Distant rings — thin torus in equatorial plane
-    const ring1 = new THREE.Mesh(
-      new THREE.TorusGeometry(8.2, 0.12, 4, 120),
-      new THREE.MeshBasicMaterial({ color: 0xbbaa88, transparent: true, opacity: 0.28, depthWrite: false, side: THREE.DoubleSide })
-    );
-    ring1.position.set(1.5, -0.8, -12);
-    ring1.rotation.x = Math.PI * 0.38;
-    ring1.userData.animate = (t) => { ring1.rotation.z = t * 0.02; };
-    scene.add(ring1);
-    presetMeshes.push(ring1);
+    // Moon 3 — tiny fast inner moon
+    const moon3 = new THREE.Mesh(new THREE.SphereGeometry(0.18,14,10),
+      new THREE.MeshStandardMaterial({color:0xddddcc,roughness:0.88,metalness:0.05}));
+    moon3.userData.animate = t => {
+      moon3.position.set(2.0 + Math.cos(t*0.65+4.0)*9.0, -1.2 + Math.sin(t*0.65+4.0)*1.8, -16 + Math.sin(t*0.65+4.0)*3.2);
+    };
+    scene.add(moon3); presetMeshes.push(moon3);
 
     setStatus('PLANET CLOSE-UP'); fadeStatus(2000);
   }
@@ -1798,6 +1814,268 @@
     setStatus('FLOATING CITY'); fadeStatus(2000);
   }
 
+  // ── Gas Giant — Jupiter-style banded giant with close-up moon transit ──
+  function buildPresetGasGiant() {
+    setSceneVisible(true);
+    scene.fog = null;
+
+    const sun = new THREE.DirectionalLight(0xffe8b0, 3.8);
+    sun.position.set(15, 6, 18);
+    const amb = new THREE.AmbientLight(0x030612, 0.45);
+    const rim = new THREE.DirectionalLight(0x331100, 0.8);
+    rim.position.set(-12, -5, 8);
+    scene.add(sun, amb, rim); presetMeshes.push(sun, amb, rim);
+
+    // Very close foreground — a passing icy chunk at z=-3 to command the near field
+    const frag = new THREE.Mesh(new THREE.IcosahedronGeometry(0.28,1),
+      new THREE.MeshStandardMaterial({color:0x99aabb,roughness:0.7,metalness:0.4}));
+    frag.position.set(-4, 2, -3);
+    frag.userData.animate = t => { frag.rotation.x = t*0.12; frag.rotation.y = t*0.08; };
+    scene.add(frag); presetMeshes.push(frag);
+
+    // More foreground debris
+    for(let i=0;i<8;i++){
+      const r=0.06+Math.random()*0.12;
+      const d=new THREE.Mesh(new THREE.OctahedronGeometry(r),
+        new THREE.MeshStandardMaterial({color:0x8899aa,roughness:0.88,metalness:0.1}));
+      d.position.set((Math.random()-0.5)*18,(Math.random()-0.5)*10,-3.5-Math.random()*2);
+      const rx=(Math.random()-0.5)*0.008,ry=(Math.random()-0.5)*0.011;
+      d.userData.animate=()=>{d.rotation.x+=rx;d.rotation.y+=ry;};
+      scene.add(d);presetMeshes.push(d);
+    }
+
+    // Gas giant — r=9, partially filling the frame (offset down-right)
+    const giant = new THREE.Mesh(
+      new THREE.SphereGeometry(9.0, 80, 52),
+      new THREE.MeshStandardMaterial({
+        color: 0xcc8844, emissive:0x1a0800, emissiveIntensity:1.0, roughness:0.78, metalness:0.0
+      })
+    );
+    giant.position.set(3.5, -2.5, -20);
+    giant.userData.animate = t => { giant.rotation.y = t * 0.028; };
+    scene.add(giant); presetMeshes.push(giant);
+
+    // Band stripes — slightly larger overlay sphere with alternating opacity bands
+    for(let b=0;b<6;b++){
+      const bMat = new THREE.MeshStandardMaterial({
+        color: b%2===0 ? 0xddaa66 : 0x886633,
+        roughness:0.88, metalness:0.0,
+        transparent:true, opacity:0.18+b*0.012, depthWrite:false,
+      });
+      const band = new THREE.Mesh(new THREE.SphereGeometry(9.05+b*0.02,48,8),bMat);
+      band.position.copy(giant.position);
+      band.userData.animate = t => { band.rotation.y = t*(0.028+b*0.003); };
+      scene.add(band); presetMeshes.push(band);
+    }
+
+    // Atmosphere glow
+    const aTex = radialTex(256,[
+      [0,'rgba(220,140,60,0.0)'],[0.50,'rgba(220,140,60,0.0)'],
+      [0.62,'rgba(240,160,80,0.48)'],[0.76,'rgba(200,100,40,0.18)'],[1,'rgba(0,0,0,0)']
+    ]);
+    const aGlow = mkSoftPlane(aTex,24,24,3.5,-2.5,-19.5,0);
+    aGlow.userData.animate=t=>{aGlow.material.opacity=0.8+Math.sin(t*0.12)*0.12;};
+    scene.add(aGlow); presetMeshes.push(aGlow);
+
+    // Equatorial ring system — wide, semi-transparent
+    const ringData = [{r:13,t:0.6,op:0.45,col:0xcc9944},{r:16,t:0.4,op:0.28,col:0xbb8833},{r:18.5,t:0.22,op:0.14,col:0xaa7722}];
+    ringData.forEach((rd,i)=>{
+      const rng=new THREE.Mesh(new THREE.TorusGeometry(rd.r,rd.t,4,200),
+        new THREE.MeshStandardMaterial({color:rd.col,roughness:0.95,metalness:0.03,transparent:true,opacity:rd.op,depthWrite:false,side:THREE.DoubleSide}));
+      rng.position.copy(giant.position);
+      rng.rotation.x=Math.PI*0.36; rng.rotation.z=0.08;
+      rng.userData.animate=t=>{rng.rotation.z=0.08+t*0.006*(i%2?1:-1);};
+      scene.add(rng); presetMeshes.push(rng);
+    });
+
+    // Transit moon — crossing in front of planet
+    const tMoon=new THREE.Mesh(new THREE.SphereGeometry(0.55,24,16),
+      new THREE.MeshStandardMaterial({color:0xddccaa,roughness:0.88,metalness:0.06}));
+    tMoon.userData.animate=t=>{
+      tMoon.position.set(3.5+Math.cos(t*0.35)*12,-2.5+Math.sin(t*0.35)*3.5,-20+Math.sin(t*0.35)*5.5);
+    };
+    scene.add(tMoon); presetMeshes.push(tMoon);
+
+    // Distant moon
+    const dMoon=new THREE.Mesh(new THREE.SphereGeometry(0.3,16,12),
+      new THREE.MeshStandardMaterial({color:0xaabbcc,roughness:0.90,metalness:0.0}));
+    dMoon.userData.animate=t=>{
+      dMoon.position.set(3.5+Math.cos(t*0.15+1.8)*19,-2.5+Math.sin(t*0.18+0.9)*8,-20+Math.sin(t*0.15+1.8)*10);
+    };
+    scene.add(dMoon); presetMeshes.push(dMoon);
+
+    setStatus('GAS GIANT'); fadeStatus(2000);
+  }
+
+  // ── Ice Moon — frozen world surface, parent planet in background ──
+  function buildPresetIceMoon() {
+    setSceneVisible(false);
+    scene.fog = new THREE.FogExp2(0x000816, 0.012);
+
+    const sun = new THREE.DirectionalLight(0xddeeff, 2.8);
+    sun.position.set(10, 8, 15);
+    const amb = new THREE.AmbientLight(0x080820, 0.4);
+    const rim = new THREE.DirectionalLight(0x0022aa, 1.5); // strong blue rim = space reflection
+    rim.position.set(-10, 0, 8);
+    scene.add(sun, amb, rim); presetMeshes.push(sun, amb, rim);
+
+    // Very close ice crystals z=-2 to -4 — striking near-field depth
+    for(let i=0;i<18;i++){
+      const h=0.4+Math.random()*1.2;
+      const r=0.04+Math.random()*0.12;
+      const ico=new THREE.Mesh(new THREE.ConeGeometry(r,h,6),
+        new THREE.MeshStandardMaterial({color:0xaaccee,emissive:0x002244,emissiveIntensity:0.5,roughness:0.1,metalness:0.85,transparent:true,opacity:0.78+Math.random()*0.2}));
+      ico.position.set((Math.random()-0.5)*16,(Math.random()-0.5)*8,-2-Math.random()*2);
+      ico.rotation.set(Math.random()*Math.PI,(Math.random()-0.5)*0.4,Math.random()*Math.PI);
+      const rx=(Math.random()-0.5)*0.003,ry=(Math.random()-0.5)*0.002;
+      ico.userData.animate=()=>{ico.rotation.x+=rx;ico.rotation.y+=ry;};
+      scene.add(ico); presetMeshes.push(ico);
+    }
+
+    // Ice surface chunks at mid-ground
+    for(let i=0;i<20;i++){
+      const sz=0.08+Math.random()*0.35;
+      const m=new THREE.Mesh(new THREE.IcosahedronGeometry(sz,1),
+        new THREE.MeshStandardMaterial({color:0xbbddff,roughness:0.1,metalness:0.7,transparent:true,opacity:0.65+Math.random()*0.3}));
+      m.position.set((Math.random()-0.5)*20,(Math.random()-0.5)*12,-5-Math.random()*10);
+      const ry=(Math.random()-0.5)*0.005;
+      m.userData.animate=()=>{m.rotation.y+=ry;};
+      scene.add(m); presetMeshes.push(m);
+    }
+
+    // Parent planet far in background — large, ominous
+    const parent=new THREE.Mesh(new THREE.SphereGeometry(8,64,40),
+      new THREE.MeshStandardMaterial({color:0x1155aa,emissive:0x020a1a,emissiveIntensity:1.0,roughness:0.85,metalness:0.0}));
+    parent.position.set(-5,4,-55);
+    parent.userData.animate=t=>{parent.rotation.y=t*0.015;};
+    scene.add(parent); presetMeshes.push(parent);
+
+    // Parent atmosphere
+    const pAtm=radialTex(256,[[0,'rgba(40,120,255,0.0)'],[0.56,'rgba(40,120,255,0.0)'],[0.68,'rgba(60,160,255,0.55)'],[0.82,'rgba(40,100,220,0.18)'],[1,'rgba(0,0,0,0)']]);
+    const pGlow=mkSoftPlane(pAtm,22,22,-5,4,-54.5,0);
+    pGlow.userData.animate=t=>{pGlow.material.opacity=0.8+Math.sin(t*0.09)*0.1;};
+    scene.add(pGlow); presetMeshes.push(pGlow);
+
+    // Ground ice plane
+    const ice=new THREE.Mesh(new THREE.PlaneGeometry(140,80),
+      new THREE.MeshStandardMaterial({color:0x88aacc,roughness:0.05,metalness:0.9,transparent:true,opacity:0.5}));
+    ice.rotation.x=-Math.PI/2; ice.position.set(0,-5,-30);
+    scene.add(ice); presetMeshes.push(ice);
+
+    setStatus('ICE MOON'); fadeStatus(2000);
+  }
+
+  // ── UPGRADED Crystal — large focal crystal + extreme depth field ──
+  function buildPresetCrystalV2() {
+    setSceneVisible(false);
+    scene.fog = new THREE.FogExp2(0x010015, 0.018);
+
+    const key = new THREE.DirectionalLight(0xaabbff, 3.5);
+    key.position.set(8, 12, 10);
+    const fill = new THREE.AmbientLight(0x100824, 0.5);
+    const rim = new THREE.DirectionalLight(0xff44aa, 1.8);
+    rim.position.set(-10, -5, 5);
+    scene.add(key, fill, rim); presetMeshes.push(key, fill, rim);
+
+    // FOCAL OBJECT — giant icosahedron r=1.5 at z=-5, very close
+    const focal = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5,1),
+      new THREE.MeshStandardMaterial({color:0xffffff,emissive:0x6644ff,emissiveIntensity:0.6,roughness:0.0,metalness:0.9}));
+    focal.position.set(0,0,-5);
+    focal.userData.animate=t=>{focal.rotation.x=t*0.22;focal.rotation.y=t*0.15;focal.rotation.z=t*0.10;};
+    scene.add(focal); presetMeshes.push(focal);
+
+    // Focal glow
+    const fgTex=radialTex(256,[[0,'rgba(140,80,255,0.9)'],[0.35,'rgba(100,50,255,0.4)'],[0.65,'rgba(80,20,220,0.12)'],[1,'rgba(0,0,0,0)']]);
+    const fGlow=mkSoftPlane(fgTex,8,8,0,0,-4.8,0);
+    fGlow.userData.animate=t=>{fGlow.material.opacity=0.6+Math.sin(t*1.2)*0.3;fGlow.scale.setScalar(0.8+Math.sin(t*0.8)*0.25);};
+    scene.add(fGlow); presetMeshes.push(fGlow);
+
+    // Mid-field crystals z=-8 to -20, MeshStandardMaterial with high metalness
+    for(let i=0;i<35;i++){
+      const sz=0.12+Math.pow(Math.random(),1.5)*0.75;
+      const types=['ico','oct','tet','dod']; const t2=types[i%4];
+      let geo;
+      switch(t2){case'ico':geo=new THREE.IcosahedronGeometry(sz,0);break;case'oct':geo=new THREE.OctahedronGeometry(sz);break;case'tet':geo=new THREE.TetrahedronGeometry(sz);break;default:geo=new THREE.DodecahedronGeometry(sz,0);}
+      const hue=0.65+Math.random()*0.15;
+      const col=new THREE.Color().setHSL(hue,0.85,0.55+Math.random()*0.3);
+      const mat=new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:0.25,roughness:0.02,metalness:0.90,transparent:true,opacity:0.72+Math.random()*0.28});
+      const m=new THREE.Mesh(geo,mat);
+      m.position.set((Math.random()-0.5)*22,(Math.random()-0.5)*14,-8-Math.random()*12);
+      const rx=(Math.random()-0.5)*0.012,ry=(Math.random()-0.5)*0.015;
+      m.userData.animate=()=>{m.rotation.x+=rx;m.rotation.y+=ry;};
+      scene.add(m); presetMeshes.push(m);
+    }
+
+    // Deep field z=-22 to -50 — wireframe for depth haze
+    for(let i=0;i<40;i++){
+      const sz=0.06+Math.random()*0.3;
+      const g2=new THREE.IcosahedronGeometry(sz,0);
+      const c2=new THREE.Color().setHSL(0.7+Math.random()*0.1,0.6,0.3+Math.random()*0.25);
+      const m2=new THREE.Mesh(g2,new THREE.MeshBasicMaterial({color:c2,wireframe:true,transparent:true,opacity:0.35,depthWrite:false,blending:THREE.AdditiveBlending}));
+      m2.position.set((Math.random()-0.5)*30,(Math.random()-0.5)*18,-22-Math.random()*28);
+      const ry2=(Math.random()-0.5)*0.009;
+      m2.userData.animate=()=>{m2.rotation.y+=ry2;};
+      scene.add(m2); presetMeshes.push(m2);
+    }
+
+    setStatus('CRYSTAL FOCAL'); fadeStatus(2000);
+  }
+
+  // ── UPGRADED Portal — extreme depth rings + near-field particle ring ──
+  function buildPresetPortalV2() {
+    setSceneVisible(false);
+    scene.fog = null;
+
+    const key = new THREE.DirectionalLight(0xbbaaff, 2.5);
+    key.position.set(5,8,12);
+    const fill = new THREE.AmbientLight(0x050020, 0.4);
+    const rim = new THREE.DirectionalLight(0xff2288, 1.2);
+    rim.position.set(-8,-4,6);
+    scene.add(key,fill,rim); presetMeshes.push(key,fill,rim);
+
+    // Very close foreground ring z=-3 — large, MeshStandardMaterial, dramatic
+    const fgRing=new THREE.Mesh(new THREE.TorusGeometry(4.5,0.18,16,140),
+      new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xaa66ff,emissiveIntensity:0.8,roughness:0.1,metalness:0.8}));
+    fgRing.position.z=-3;
+    fgRing.userData.animate=t=>{fgRing.rotation.z=t*0.035;fgRing.rotation.x=Math.sin(t*0.12)*0.15;};
+    scene.add(fgRing); presetMeshes.push(fgRing);
+
+    // Foreground ring glow
+    const fRTex=radialTex(128,[[0,'rgba(180,100,255,0.0)'],[0.55,'rgba(180,100,255,0.0)'],[0.72,'rgba(180,100,255,0.55)'],[0.88,'rgba(120,50,220,0.22)'],[1,'rgba(0,0,0,0)']]);
+    const fRGlow=mkSoftPlane(fRTex,12,12,0,0,-2.8,0);
+    fRGlow.userData.animate=t=>{fRGlow.material.opacity=0.7+Math.sin(t*0.9)*0.25;fRGlow.rotation.z=t*0.035;};
+    scene.add(fRGlow); presetMeshes.push(fRGlow);
+
+    // Receding portal rings — extreme depth from z=-6 to z=-80
+    const ringDefs=[
+      {z:-6, r:4.0,t:0.10,col:0xee88ff,em:0.6},{z:-10,r:3.4,t:0.08,col:0xcc66ff,em:0.5},
+      {z:-16,r:2.8,t:0.07,col:0xaa44ee,em:0.45},{z:-24,r:2.2,t:0.06,col:0x8833cc,em:0.4},
+      {z:-34,r:1.7,t:0.05,col:0x6622aa,em:0.38},{z:-46,r:1.2,t:0.04,col:0x551188,em:0.35},
+      {z:-62,r:0.8,t:0.03,col:0x440066,em:0.3}, {z:-80,r:0.4,t:0.02,col:0xffffff,em:1.2},
+    ];
+    ringDefs.forEach(({z,r,t,col,em},i)=>{
+      const ring=new THREE.Mesh(new THREE.TorusGeometry(r,t,12,100),
+        new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:em,roughness:0.15,metalness:0.6,transparent:true,opacity:0.9-i*0.04,depthWrite:true}));
+      ring.position.z=z;
+      const dir=i%2===0?1:-1;
+      ring.userData.animate=t2=>{ring.rotation.z+=0.0015*(i+1)*dir; ring.rotation.x=Math.sin(t2*0.08+i*0.6)*0.1;};
+      scene.add(ring); presetMeshes.push(ring);
+    });
+
+    // Terminus — bright white sphere at end of tunnel
+    const terminus=new THREE.Mesh(new THREE.SphereGeometry(0.22,20,14),
+      new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:3.0,roughness:0.0,metalness:0.0}));
+    terminus.position.z=-80;
+    scene.add(terminus); presetMeshes.push(terminus);
+
+    const tTex=radialTex(128,[[0,'rgba(255,240,255,1.0)'],[0.3,'rgba(200,150,255,0.6)'],[0.65,'rgba(120,60,255,0.15)'],[1,'rgba(0,0,0,0)']]);
+    const tGlow=mkSoftPlane(tTex,12,12,0,0,-79.5,0);
+    tGlow.userData.animate=t=>{tGlow.material.opacity=0.6+Math.sin(t*0.6)*0.35;};
+    scene.add(tGlow); presetMeshes.push(tGlow);
+
+    setStatus('PORTAL V2'); fadeStatus(2000);
+  }
+
   // ── Preset dispatcher ────────────────────────────────
   function setPreset(name) {
     clearPreset();
@@ -1809,7 +2087,7 @@
     restoreFog();
 
     const vig = el('vignette');
-    if(vig) vig.style.opacity = ['space','aurora','nebula','binary','galaxy','starcluster','crystalcave','void'].includes(name) ? '1' : '0.65';
+    if(vig) vig.style.opacity = ['space','aurora','nebula','binary','galaxy','starcluster','crystalcave','void','icemoon'].includes(name) ? '1' : '0.65';
 
     switch(name){
       case 'space':       buildPresetSpace();       break;
@@ -1836,6 +2114,10 @@
       case 'lightbeams':  buildPresetLightBeams();  break;
       case 'planet':      buildPresetPlanet();      break;
       case 'floatingcity':buildPresetFloatingCity();break;
+      case 'gasgiant':    buildPresetGasGiant();    break;
+      case 'icemoon':     buildPresetIceMoon();     break;
+      case 'crystalv2':   buildPresetCrystalV2();   break;
+      case 'portalv2':    buildPresetPortalV2();    break;
     }
     document.querySelectorAll('.preset-btn').forEach(b=>{
       const a=b.dataset.preset===name;
