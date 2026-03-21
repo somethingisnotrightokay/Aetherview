@@ -191,48 +191,86 @@
   </div>
 
   <!-- Desktop settings -->
-  <div id="settings" class="panel">
+  <div id="settings" class="panel" style="top:24px;right:24px;padding:20px 22px 16px;min-width:300px;max-height:88vh;overflow-y:auto;">
     <h3>AetherView</h3>
+
+    <!-- Camera source -->
     <div class="s-row">
       <label>Camera</label>
       <select id="cam-select-d"><option value="">Detecting...</option></select>
     </div>
+
     <hr class="div">
+    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Camera Controls</div>
     <div class="s-row"><label>Sensitivity</label><input type="range" id="d-sens" min="0.05" max="3" step="0.05" value="0.8"><span class="val" id="d-sens-v">0.80</span></div>
-    <div class="s-row"><label>Depth Scale</label><input type="range" id="d-depth" min="0.1" max="4" step="0.05" value="1.0"><span class="val" id="d-depth-v">1.00</span></div>
+    <div class="s-row"><label>X Sensitivity</label><input type="range" id="d-sensx" min="0.1" max="3" step="0.05" value="1.0"><span class="val" id="d-sensx-v">1.00</span></div>
+    <div class="s-row"><label>Y Sensitivity</label><input type="range" id="d-sensy" min="0.1" max="3" step="0.05" value="1.0"><span class="val" id="d-sensy-v">1.00</span></div>
+    <div class="s-row"><label>Z Sensitivity</label><input type="range" id="d-sensz" min="0.1" max="3" step="0.05" value="1.0"><span class="val" id="d-sensz-v">1.00</span></div>
     <div class="s-row"><label>Smoothing</label><input type="range" id="d-smooth" min="0.01" max="0.5" step="0.005" value="0.08"><span class="val" id="d-smooth-v">0.080</span></div>
-    <div class="s-row cb-row"><label>Flip Y</label><input type="checkbox" id="d-flipy"><span class="note">invert vertical</span></div>
+    <div class="s-row cb-row"><label>Invert X</label><input type="checkbox" id="d-invertx"><span class="note">flip left/right</span></div>
+    <div class="s-row cb-row"><label>Invert Y</label><input type="checkbox" id="d-flipy"><span class="note">flip up/down</span></div>
+    <div class="s-row cb-row"><label>Invert Z</label><input type="checkbox" id="d-invertz"><span class="note">flip depth</span></div>
+
+    <hr class="div">
+    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Projection</div>
+    <div class="s-row"><label>FOV</label><input type="range" id="d-fov" min="30" max="100" step="1" value="60"><span class="val" id="d-fov-v">60°</span></div>
+    <div class="s-row"><label>Depth Scale</label><input type="range" id="d-depth" min="0.1" max="4" step="0.05" value="1.0"><span class="val" id="d-depth-v">1.00</span></div>
+    <div class="s-row"><label>Eye Distance</label><input type="range" id="d-eyedist" min="0.2" max="3" step="0.05" value="1.0"><span class="val" id="d-eyedist-v">1.00</span></div>
+    <div class="s-row"><label>Frustum Width</label><input type="range" id="d-frustum" min="0.3" max="3" step="0.05" value="1.0"><span class="val" id="d-frustum-v">1.00</span></div>
+    <div class="s-row"><label>Pano Sens</label><input type="range" id="d-panosens" min="0.1" max="3" step="0.05" value="1.0"><span class="val" id="d-panosens-v">1.00</span></div>
+
+    <hr class="div">
+    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Modes</div>
+    <div class="s-row cb-row"><label>Off-Axis</label><input type="checkbox" id="d-offaxis" checked><span class="note">window projection</span></div>
+    <div class="s-row cb-row"><label>Depth FX</label><input type="checkbox" id="d-depth-on" checked><span class="note">depth shader</span></div>
+    <div class="s-row cb-row"><label>Debug HUD</label><input type="checkbox" id="d-debug"><span class="note">camera state</span></div>
+
     <hr class="div">
     <div class="fps-row"><span>Page FPS</span><span class="fval" id="d-fps-page">--</span></div>
     <div class="fps-row"><span>Track FPS</span><span class="fval" id="d-fps-track">--</span></div>
+
     <hr class="div">
-    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Presets</div>
-    <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">
-      <button class="preset-btn" data-preset="space">Space</button>
-      <button class="preset-btn" data-preset="solar">Solar</button>
+    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Presets — Space &amp; Cosmic</div>
+    <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px;">
+      <button class="preset-btn" data-preset="space">Deep Space</button>
+      <button class="preset-btn" data-preset="solar">Solar Sys.</button>
       <button class="preset-btn" data-preset="aurora">Aurora</button>
-      <button class="preset-btn" data-preset="neon">Neon</button>
+      <button class="preset-btn" data-preset="galaxy">Galaxy</button>
+      <button class="preset-btn" data-preset="nebula">Nebula</button>
+      <button class="preset-btn" data-preset="binary">Binary Stars</button>
+      <button class="preset-btn" data-preset="asteroid">Asteroids</button>
+      <button class="preset-btn" data-preset="starcluster">Star Cluster</button>
+      <button class="preset-btn" data-preset="planet">Planet</button>
+    </div>
+    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Presets — Geometry &amp; Depth</div>
+    <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px;">
+      <button class="preset-btn" data-preset="crystal">Crystal</button>
+      <button class="preset-btn" data-preset="storm">Crystal Storm</button>
+      <button class="preset-btn" data-preset="tunnel">Geo Tunnel</button>
       <button class="preset-btn" data-preset="portal">Portal</button>
       <button class="preset-btn" data-preset="wormhole">Wormhole</button>
-      <button class="preset-btn" data-preset="crystal">Crystal</button>
-      <button class="preset-btn" data-preset="galaxy">Galaxy</button>
-      <button class="preset-btn" data-preset="binary">Binary</button>
-      <button class="preset-btn" data-preset="nebula">Nebula</button>
+      <button class="preset-btn" data-preset="swarm">Depth Swarm</button>
+      <button class="preset-btn" data-preset="platforms">Platforms</button>
+      <button class="preset-btn" data-preset="floatingcity">Float City</button>
     </div>
-    <div class="s-row">
-      <label>FOV</label>
-      <input type="range" id="d-fov" min="30" max="100" step="1" value="60">
-      <span class="val" id="d-fov-v">60°</span>
+    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Presets — Structured</div>
+    <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px;">
+      <button class="preset-btn" data-preset="neon">Neon Grid</button>
+      <button class="preset-btn" data-preset="hallway">Hallway</button>
+      <button class="preset-btn" data-preset="gridworld">Grid World</button>
     </div>
+    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Presets — Experimental</div>
+    <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px;">
+      <button class="preset-btn" data-preset="energy">Energy Waves</button>
+      <button class="preset-btn" data-preset="crystalcave">Crystal Cave</button>
+      <button class="preset-btn" data-preset="void">Void</button>
+      <button class="preset-btn" data-preset="lightbeams">Light Beams</button>
+    </div>
+
     <hr class="div">
     <div class="keys">
-      <kbd>S</kbd> panel &nbsp;<kbd>C</kbd> cam preview &nbsp;<kbd>I</kbd> image &nbsp;<kbd>V</kbd> video &nbsp;<kbd>M</kbd> model &nbsp;<kbd>X</kbd> clear &nbsp;<kbd>D</kbd> debug<br>
-      <kbd>R</kbd> recalibrate &nbsp; drag image, video, or .glb onto window
+      <kbd>S</kbd> panel &nbsp;<kbd>C</kbd> cam &nbsp;<kbd>I</kbd> img &nbsp;<kbd>V</kbd> vid &nbsp;<kbd>M</kbd> model &nbsp;<kbd>X</kbd> clear &nbsp;<kbd>D</kbd> debug &nbsp;<kbd>R</kbd> recal
     </div>
-    <hr class="div">
-    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Advanced</div>
-    <div class="s-row cb-row"><label>Depth FX</label><input type="checkbox" id="d-depth-on" checked><span class="note">depth shader</span></div>
-    <div class="s-row cb-row"><label>Debug HUD</label><input type="checkbox" id="d-debug"><span class="note">show camera state</span></div>
   </div>
 
   <!-- Desktop camera preview -->
@@ -248,18 +286,38 @@
   <div id="mobile-sheet">
     <div id="sheet-handle"><div id="sheet-pill"></div><div id="sheet-title">AetherView</div></div>
     <div id="sheet-body">
-      <div class="sh-sec">Presets</div>
-      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;">
-        <button class="m-btn preset-btn" data-preset="space" style="padding:9px 14px;font-size:10px;">Space</button>
-        <button class="m-btn preset-btn" data-preset="solar" style="padding:9px 14px;font-size:10px;">Solar</button>
-        <button class="m-btn preset-btn" data-preset="aurora" style="padding:9px 14px;font-size:10px;">Aurora</button>
-        <button class="m-btn preset-btn" data-preset="neon" style="padding:9px 14px;font-size:10px;">Neon</button>
-        <button class="m-btn preset-btn" data-preset="portal" style="padding:9px 14px;font-size:10px;">Portal</button>
-        <button class="m-btn preset-btn" data-preset="wormhole" style="padding:9px 14px;font-size:10px;">Wormhole</button>
-        <button class="m-btn preset-btn" data-preset="crystal" style="padding:9px 14px;font-size:10px;">Crystal</button>
-        <button class="m-btn preset-btn" data-preset="galaxy" style="padding:9px 14px;font-size:10px;">Galaxy</button>
-        <button class="m-btn preset-btn" data-preset="binary" style="padding:9px 14px;font-size:10px;">Binary</button>
-        <button class="m-btn preset-btn" data-preset="nebula" style="padding:9px 14px;font-size:10px;">Nebula</button>
+      <div class="sh-sec">Space &amp; Cosmic</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;">
+        <button class="m-btn preset-btn" data-preset="space" style="padding:8px 12px;font-size:10px;">Deep Space</button>
+        <button class="m-btn preset-btn" data-preset="solar" style="padding:8px 12px;font-size:10px;">Solar</button>
+        <button class="m-btn preset-btn" data-preset="aurora" style="padding:8px 12px;font-size:10px;">Aurora</button>
+        <button class="m-btn preset-btn" data-preset="galaxy" style="padding:8px 12px;font-size:10px;">Galaxy</button>
+        <button class="m-btn preset-btn" data-preset="nebula" style="padding:8px 12px;font-size:10px;">Nebula</button>
+        <button class="m-btn preset-btn" data-preset="binary" style="padding:8px 12px;font-size:10px;">Binary</button>
+        <button class="m-btn preset-btn" data-preset="asteroid" style="padding:8px 12px;font-size:10px;">Asteroids</button>
+        <button class="m-btn preset-btn" data-preset="starcluster" style="padding:8px 12px;font-size:10px;">Cluster</button>
+        <button class="m-btn preset-btn" data-preset="planet" style="padding:8px 12px;font-size:10px;">Planet</button>
+      </div>
+      <div class="sh-sec">Geometry &amp; Depth</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;">
+        <button class="m-btn preset-btn" data-preset="crystal" style="padding:8px 12px;font-size:10px;">Crystal</button>
+        <button class="m-btn preset-btn" data-preset="storm" style="padding:8px 12px;font-size:10px;">Storm</button>
+        <button class="m-btn preset-btn" data-preset="tunnel" style="padding:8px 12px;font-size:10px;">Tunnel</button>
+        <button class="m-btn preset-btn" data-preset="portal" style="padding:8px 12px;font-size:10px;">Portal</button>
+        <button class="m-btn preset-btn" data-preset="wormhole" style="padding:8px 12px;font-size:10px;">Wormhole</button>
+        <button class="m-btn preset-btn" data-preset="swarm" style="padding:8px 12px;font-size:10px;">Swarm</button>
+        <button class="m-btn preset-btn" data-preset="platforms" style="padding:8px 12px;font-size:10px;">Platforms</button>
+        <button class="m-btn preset-btn" data-preset="floatingcity" style="padding:8px 12px;font-size:10px;">Float City</button>
+      </div>
+      <div class="sh-sec">Structured &amp; Experimental</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;">
+        <button class="m-btn preset-btn" data-preset="neon" style="padding:8px 12px;font-size:10px;">Neon</button>
+        <button class="m-btn preset-btn" data-preset="hallway" style="padding:8px 12px;font-size:10px;">Hallway</button>
+        <button class="m-btn preset-btn" data-preset="gridworld" style="padding:8px 12px;font-size:10px;">Grid</button>
+        <button class="m-btn preset-btn" data-preset="energy" style="padding:8px 12px;font-size:10px;">Energy</button>
+        <button class="m-btn preset-btn" data-preset="crystalcave" style="padding:8px 12px;font-size:10px;">Cave</button>
+        <button class="m-btn preset-btn" data-preset="void" style="padding:8px 12px;font-size:10px;">Void</button>
+        <button class="m-btn preset-btn" data-preset="lightbeams" style="padding:8px 12px;font-size:10px;">Beams</button>
       </div>
 
       <div class="sh-sec">Tracking</div>
@@ -284,8 +342,10 @@
       <div class="m-row"><label>FOV</label><input type="range" id="m-fov" min="30" max="100" step="1" value="60"><span class="val" id="m-fov-v">60°</span></div>
       <div class="m-row"><label>Sensitivity</label><input type="range" id="m-sens" min="0.05" max="3" step="0.05" value="0.8"><span class="val" id="m-sens-v">0.80</span></div>
       <div class="m-row"><label>Depth Scale</label><input type="range" id="m-depth" min="0.1" max="4" step="0.05" value="1.0"><span class="val" id="m-depth-v">1.00</span></div>
+      <div class="m-row"><label>Pano Sens</label><input type="range" id="m-panosens" min="0.1" max="3" step="0.05" value="1.0"><span class="val" id="m-panosens-v">1.00</span></div>
       <div class="m-row"><label>Smoothing</label><input type="range" id="m-smooth" min="0.01" max="0.5" step="0.005" value="0.08"><span class="val" id="m-smooth-v">0.080</span></div>
-      <div class="m-row"><label>Flip Y</label><input type="checkbox" id="m-flipy"><span style="color:rgba(200,190,255,0.28);font-size:9px;">invert vertical</span></div>
+      <div class="m-row"><label>Invert Y</label><input type="checkbox" id="m-flipy"><span style="color:rgba(200,190,255,0.28);font-size:9px;">flip up/down</span></div>
+      <div class="m-row"><label>Invert X</label><input type="checkbox" id="m-invertx"><span style="color:rgba(200,190,255,0.28);font-size:9px;">flip left/right</span></div>
 
       <div id="m-fps-strip">
         <span>Page: <span class="fval" id="m-fps-page">--</span> fps</span>
@@ -318,14 +378,23 @@
   /* ── CONFIG ── */
   const CFG = {
     sensitivity : 0.8,
+    sensX       : 1.0,   // per-axis multiplier on top of sensitivity
+    sensY       : 1.0,
+    sensZ       : 1.0,
+    panoSens    : 1.0,   // separate sensitivity for panorama rotation
     depthScale  : 1.0,
     smoothing   : 0.08,
     flipY       : false,
+    invertX     : false,
+    invertZ     : false,
     fov         : 60,
+    eyeDistMult : 1.0,   // multiplies eye travel range (how far eye moves per head unit)
+    frustumScale: 1.0,   // multiplies SCREEN_HALF_W — widens/narrows virtual window
+    offAxisOn   : true,  // master off-axis toggle — when false, use simple cam rotation
     targetFPS   : isMobile ? 24 : 30,
     touchDrag   : true,
-    depthOn     : true,  // depth shader enabled/disabled
-    debugOn     : false, // debug HUD
+    depthOn     : true,
+    debugOn     : false,
   };
 
   /* ── HEAD STATE ── */
@@ -400,36 +469,46 @@
   function applyOffAxis(hx, hy) {
     if (isPanoActive) {
       // Panorama: pure rotation model — look around inside sphere
-      cam3.position.set(0, 0, BASE_EYE_Z); // keep at center, no translation
+      cam3.position.set(0, 0, BASE_EYE_Z);
       cam3.rotation.order = 'YXZ';
-      cam3.rotation.y =  hx * 0.4 * CFG.sensitivity;
-      cam3.rotation.x = -hy * 0.3 * CFG.sensitivity;
+      const px = (CFG.invertX ? -hx : hx) * CFG.sensitivity * CFG.sensX * CFG.panoSens * 0.4;
+      const py = (CFG.flipY  ?  hy : -hy) * CFG.sensitivity * CFG.sensY * CFG.panoSens * 0.3;
+      cam3.rotation.y = px;
+      cam3.rotation.x = py;
       cam3.rotation.z = 0;
       cam3.updateProjectionMatrix();
       return;
     }
 
-    // Flat / 3D scene: true off-axis window projection
-    const eyeRange  = CFG.sensitivity * 2.2;
-    const eyeX      =  hx * eyeRange;
-    // Y: head UP → headRaw.y positive (with current sign convention)
-    //    → eye moves UP → frustum sees more TOP → correct window behaviour
-    const eyeY      = (CFG.flipY ? hy : -hy) * eyeRange;
-    // Z: lean closer → reduce perceived screen distance → stronger parallax separation
-    const D         = SCREEN_DIST * Math.max(0.5, 1 - headSmooth.z * 0.25);
+    const hxA = (CFG.invertX ? -hx : hx);
+    const hyA = (CFG.flipY   ?  hy : -hy);
+    const zDepth = (CFG.invertZ ? -headSmooth.z : headSmooth.z) * CFG.sensZ;
 
-    // Move camera to eye position, reset any leftover pano rotation
+    if (!CFG.offAxisOn) {
+      // Off-axis disabled — simple camera rotation fallback (still 3D, just symmetric frustum)
+      cam3.position.set(0, 0, BASE_EYE_Z);
+      cam3.rotation.order = 'YXZ';
+      cam3.rotation.y =  hxA * CFG.sensitivity * CFG.sensX * 0.22;
+      cam3.rotation.x = -hyA * CFG.sensitivity * CFG.sensY * 0.18;
+      cam3.rotation.z = 0;
+      cam3.updateProjectionMatrix();
+      return;
+    }
+
+    // True off-axis window projection (Paul Bourke)
+    const eyeRange = CFG.sensitivity * 2.2 * CFG.eyeDistMult;
+    const eyeX = hxA * eyeRange * CFG.sensX;
+    const eyeY = hyA * eyeRange * CFG.sensY;
+    const D    = SCREEN_DIST * Math.max(0.5, 1 - zDepth * 0.25);
+
     cam3.position.set(eyeX, eyeY, BASE_EYE_Z);
     cam3.rotation.set(0, 0, 0);
 
-    // Screen half-width / height in world space
     const asp  = window.innerWidth / window.innerHeight;
-    const swH  = SCREEN_HALF_W;
+    const swH  = SCREEN_HALF_W * CFG.frustumScale;
     const swV  = swH / asp;
     const n    = cam3.near;
 
-    // Frustum from screen corners to eye — the window model maths
-    // L/R/B/T are edge positions at the NEAR plane (scaled from screen plane by n/D)
     const L = (-swH - eyeX) * n / D;
     const R = ( swH - eyeX) * n / D;
     const B = (-swV - eyeY) * n / D;
@@ -772,24 +851,39 @@
   let depthShaderUniforms = null;
   let depthMapTex = null;
 
-  // Luminance-based depth map from HTMLImageElement
+  // Luminance-based depth map — sharpened with contrast stretch so near/far edges
+  // are strongly separated (not washed-out mid-gray everywhere).
   function makeDepthFromImage(imgEl) {
     const S = 128;
     const cv = document.createElement('canvas');
     cv.width = cv.height = S;
     const ctx = cv.getContext('2d');
-    ctx.filter = 'blur(12px)'; // blur before luma — smooths depth transitions
+    ctx.filter = 'blur(8px)'; // mild blur first — smooth transitions
     ctx.drawImage(imgEl, 0, 0, S, S);
     ctx.filter = 'none';
     const d = ctx.getImageData(0, 0, S, S);
-    for (let i = 0; i < d.data.length; i += 4) {
-      const l = d.data[i]*0.299 + d.data[i+1]*0.587 + d.data[i+2]*0.114;
-      d.data[i] = d.data[i+1] = d.data[i+2] = l;
-      d.data[i+3] = 255;
+    let mn = 255, mx = 0;
+    // Pass 1: compute luma + find range for contrast stretch
+    const luma = new Uint8Array(S * S);
+    for (let i = 0; i < S * S; i++) {
+      const r = d.data[i*4], g = d.data[i*4+1], b = d.data[i*4+2];
+      const l = r * 0.299 + g * 0.587 + b * 0.114;
+      luma[i] = l;
+      if (l < mn) mn = l;
+      if (l > mx) mx = l;
+    }
+    // Pass 2: stretch contrast to full 0-255 range + apply S-curve for stronger separation
+    const range = Math.max(1, mx - mn);
+    for (let i = 0; i < S * S; i++) {
+      let v = ((luma[i] - mn) / range);             // normalize 0-1
+      v = v * v * (3 - 2 * v);                      // smooth-step S-curve: mid-tones push apart
+      const out = Math.round(v * 255);
+      d.data[i*4] = d.data[i*4+1] = d.data[i*4+2] = out;
+      d.data[i*4+3] = 255;
     }
     ctx.putImageData(d, 0, 0);
     const tex = new THREE.CanvasTexture(cv);
-    tex.encoding = THREE.LinearEncoding; // depth is linear data, not color
+    tex.encoding = THREE.LinearEncoding;
     return tex;
   }
 
@@ -1198,6 +1292,512 @@
     setStatus('NEBULA CLOUD'); fadeStatus(2000);
   }
 
+  // ── NEW Preset builders ────────────────────────────────
+
+  function buildPresetAsteroid() {
+    setSceneVisible(true); scene.fog = null;
+    // Irregular rocks at many depths with strong size variation
+    const GEO_TYPES = ['ico','oct','dod'];
+    for(let i=0;i<80;i++){
+      const frac=Math.random(), depth=-3-frac*60;
+      const size=(0.08+Math.pow(1-frac,2)*1.8)*(0.4+Math.random()*1.2);
+      const type=GEO_TYPES[i%3];
+      let geo;
+      switch(type){
+        case'ico':geo=new THREE.IcosahedronGeometry(size,0);break;
+        case'oct':geo=new THREE.OctahedronGeometry(size);break;
+        default:  geo=new THREE.DodecahedronGeometry(size,0);break;
+      }
+      const grey=0.15+Math.random()*0.35;
+      const col=new THREE.Color(grey+Math.random()*0.08,grey,grey*0.95);
+      const mat=new THREE.MeshStandardMaterial({color:col,roughness:0.92,metalness:0.05});
+      const m=new THREE.Mesh(geo,mat);
+      m.position.set((Math.random()-0.5)*24,(Math.random()-0.5)*14,depth);
+      m.rotation.set(Math.random()*Math.PI,Math.random()*Math.PI,Math.random()*Math.PI);
+      const rx=(Math.random()-0.5)*0.004,ry=(Math.random()-0.5)*0.006;
+      m.userData.animate=()=>{m.rotation.x+=rx;m.rotation.y+=ry;};
+      scene.add(m);presetMeshes.push(m);
+    }
+    // Distant sun glow
+    const sTex=radialTex(128,[[0,'rgba(255,220,140,0.9)'],[0.4,'rgba(255,150,40,0.25)'],[1,'rgba(0,0,0,0)']]);
+    const sun=mkSoftPlane(sTex,22,22,12,8,-80,0);
+    scene.add(sun);presetMeshes.push(sun);
+    setStatus('ASTEROID FIELD');fadeStatus(2000);
+  }
+
+  function buildPresetStarcluster() {
+    setSceneVisible(false); scene.fog=null;
+    // Dense star cluster: very many small point lights at varying depths
+    const N=4000;
+    const geo=new THREE.BufferGeometry();
+    const pos=new Float32Array(N*3),col=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      const r=Math.pow(Math.random(),0.4)*28;
+      const theta=Math.random()*Math.PI*2,phi=Math.acos(2*Math.random()-1);
+      pos[i*3]  =Math.sin(phi)*Math.cos(theta)*r;
+      pos[i*3+1]=Math.sin(phi)*Math.sin(theta)*r*(0.4+Math.random()*0.3);
+      pos[i*3+2]=-20+Math.cos(phi)*r;
+      const t=Math.random();
+      col[i*3]  =0.8+t*0.2;col[i*3+1]=0.7+t*0.2;col[i*3+2]=0.4+t*0.6;
+    }
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',   new THREE.BufferAttribute(col,3));
+    const pts=new THREE.Points(geo,new THREE.PointsMaterial({size:0.14,vertexColors:true,transparent:true,opacity:0.9,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true,map:starTex}));
+    pts.userData.animate=(t)=>{pts.rotation.y=t*0.005;pts.rotation.z=t*0.002;};
+    scene.add(pts);presetMeshes.push(pts);
+    // Central dense glow
+    const cTex=radialTex(128,[[0,'rgba(255,230,180,1.0)'],[0.35,'rgba(255,180,80,0.45)'],[0.7,'rgba(100,60,200,0.12)'],[1,'rgba(0,0,0,0)']]);
+    const core=mkSoftPlane(cTex,20,12,0,0,-20,0);
+    core.userData.animate=(t)=>{core.material.opacity=0.5+Math.sin(t*0.3)*0.1;};
+    scene.add(core);presetMeshes.push(core);
+    setStatus('STAR CLUSTER');fadeStatus(2000);
+  }
+
+  function buildPresetStorm() {
+    // Crystal Storm — dense polyhedra at every depth, chaotic rotation
+    setSceneVisible(false); scene.fog=null;
+    const TYPES=['ico','oct','tet','dod'];
+    const COLS=[0xaaddff,0xffd4ee,0xd4ffaa,0xffe8aa,0xeeddff,0xaaffee,0xffffff,0xffaadd];
+    for(let i=0;i<120;i++){
+      const frac=Math.pow(Math.random(),0.5),depth=-1.5-frac*55;
+      const sz=0.05+Math.pow(1-frac,1.8)*(0.12+Math.random()*0.55);
+      const type=TYPES[i%4];
+      let geo;
+      switch(type){case'ico':geo=new THREE.IcosahedronGeometry(sz,0);break;case'oct':geo=new THREE.OctahedronGeometry(sz);break;case'tet':geo=new THREE.TetrahedronGeometry(sz);break;default:geo=new THREE.DodecahedronGeometry(sz,0);}
+      const wf=Math.random()>0.38;
+      const col=COLS[Math.floor(Math.random()*COLS.length)];
+      const mat=new THREE.MeshBasicMaterial({color:col,wireframe:wf,transparent:true,opacity:wf?0.55:0.18,depthWrite:false,blending:THREE.AdditiveBlending});
+      const m=new THREE.Mesh(geo,mat);
+      m.position.set((Math.random()-0.5)*28,(Math.random()-0.5)*18,depth);
+      m.rotation.set(Math.random()*Math.PI,Math.random()*Math.PI,0);
+      const rx=(Math.random()-0.5)*0.014,ry=(Math.random()-0.5)*0.018,rz=(Math.random()-0.5)*0.010;
+      m.userData.animate=()=>{m.rotation.x+=rx;m.rotation.y+=ry;m.rotation.z+=rz;};
+      scene.add(m);presetMeshes.push(m);
+    }
+    setStatus('CRYSTAL STORM');fadeStatus(2000);
+  }
+
+  function buildPresetTunnel() {
+    // Geometry Tunnel — shapes form a corridor with perspective
+    setSceneVisible(false); scene.fog=new THREE.FogExp2(0x010008,0.025);
+    const PCOLS=[0x9b7dff,0x7db8ff,0xff7db0,0x7dffc8,0xffba7d];
+    for(let ring=0;ring<18;ring++){
+      const z=-2-ring*4.5, radius=3.2+Math.sin(ring*0.55)*0.6;
+      const count=6+Math.floor(Math.random()*4);
+      for(let j=0;j<count;j++){
+        const angle=(j/count)*Math.PI*2+ring*0.28;
+        const col=PCOLS[(ring+j)%PCOLS.length];
+        const sz=0.22+Math.random()*0.38;
+        const types=['ico','oct','tet'];
+        const type=types[Math.floor(Math.random()*3)];
+        let geo;
+        switch(type){case'ico':geo=new THREE.IcosahedronGeometry(sz,0);break;case'oct':geo=new THREE.OctahedronGeometry(sz);break;default:geo=new THREE.TetrahedronGeometry(sz);}
+        const wf=ring%3===0;
+        const mat=new THREE.MeshBasicMaterial({color:col,wireframe:wf,transparent:true,opacity:wf?0.6:0.22,depthWrite:false,blending:THREE.AdditiveBlending});
+        const m=new THREE.Mesh(geo,mat);
+        m.position.set(Math.cos(angle)*radius,Math.sin(angle)*radius,z);
+        const spd=(Math.random()-0.5)*0.009;
+        m.userData.ring=ring;m.userData.baseAngle=angle;m.userData.radius=radius;m.userData.spd=spd;m.userData.z=z;
+        m.userData.animate=(t)=>{
+          const a=m.userData.baseAngle+t*m.userData.spd;
+          m.position.x=Math.cos(a)*m.userData.radius;
+          m.position.y=Math.sin(a)*m.userData.radius;
+          m.rotation.x+=0.008;m.rotation.y+=0.006;
+        };
+        scene.add(m);presetMeshes.push(m);
+      }
+    }
+    setStatus('GEOMETRY TUNNEL');fadeStatus(2000);
+  }
+
+  function buildPresetSwarm() {
+    // Depth Swarm — chaotic geometry at 5 depth bands, strong parallax
+    setSceneVisible(false); scene.fog=null;
+    const BANDS=[{z:-4,n:12,r:0.4,col:0xe0d4ff},{z:-10,n:20,r:0.28,col:0x9b7dff},{z:-20,n:30,r:0.18,col:0x6644cc},{z:-35,n:35,r:0.12,col:0x3322aa},{z:-55,n:40,r:0.07,col:0x150880}];
+    BANDS.forEach(({z,n,r,col})=>{
+      for(let i=0;i<n;i++){
+        const geo=new THREE.OctahedronGeometry(r*(0.7+Math.random()*0.6));
+        const mat=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.65+z/100,depthWrite:false,blending:THREE.AdditiveBlending});
+        const m=new THREE.Mesh(geo,mat);
+        m.position.set((Math.random()-0.5)*22,(Math.random()-0.5)*14,z+(Math.random()-0.5)*2);
+        const bx=m.position.x,by=m.position.y,ph=Math.random()*Math.PI*2;
+        const sx=(Math.random()-0.5)*1.8,sy=(Math.random()-0.5)*1.2;
+        m.userData.animate=(t)=>{m.position.x=bx+Math.sin(t*0.35+ph)*sx;m.position.y=by+Math.cos(t*0.28+ph)*sy;m.rotation.y+=0.012;m.rotation.x+=0.008;};
+        scene.add(m);presetMeshes.push(m);
+      }
+    });
+    setStatus('DEPTH SWARM');fadeStatus(2000);
+  }
+
+  function buildPresetPlatforms() {
+    // Floating Platforms — layered rectangular platforms at different depths
+    setSceneVisible(false); scene.fog=new THREE.FogExp2(0x010010,0.018);
+    const defs=[
+      {w:4,h:0.3,d:3,x:0,y:-2,z:-4,col:0x9b7dff},
+      {w:6,h:0.3,d:4,x:-3,y:-1,z:-10,col:0x7db8ff},
+      {w:3,h:0.3,d:3,x:4,y:0.5,z:-8,col:0xff7db0},
+      {w:8,h:0.3,d:5,x:0,y:-3.5,z:-18,col:0x7dffc8},
+      {w:4,h:0.3,d:4,x:-5,y:2,z:-16,col:0xffba7d},
+      {w:5,h:0.3,d:3,x:5,y:-1,z:-25,col:0xd07dff},
+      {w:10,h:0.3,d:6,x:0,y:-5,z:-30,col:0x4040aa},
+      {w:6,h:0.3,d:4,x:-6,y:3,z:-38,col:0x80a0ff},
+    ];
+    defs.forEach((d,i)=>{
+      // Platform
+      const geo=new THREE.BoxGeometry(d.w,d.h,d.d);
+      const mat=new THREE.MeshStandardMaterial({color:d.col,emissive:d.col,emissiveIntensity:0.15,roughness:0.4,metalness:0.6});
+      const m=new THREE.Mesh(geo,mat);
+      m.position.set(d.x,d.y,d.z);
+      const ph=i*0.9;
+      m.userData.animate=(t)=>{m.position.y=d.y+Math.sin(t*0.22+ph)*0.5;};
+      scene.add(m);presetMeshes.push(m);
+      // Edge glow
+      const eTex=radialTex(64,[[0,`rgba(${(d.col>>16)&255},${(d.col>>8)&255},${d.col&255},0.6)`],[0.5,'rgba(0,0,0,0.1)'],[1,'rgba(0,0,0,0)']]);
+      const glow=mkSoftPlane(eTex,d.w*1.2,d.w*1.2,d.x,d.y,d.z+0.15,0);
+      glow.userData.animate=(t)=>{glow.position.y=d.y+Math.sin(t*0.22+ph)*0.5;glow.material.opacity=0.3+Math.sin(t*0.6+ph)*0.15;};
+      scene.add(glow);presetMeshes.push(glow);
+    });
+    // Point light
+    const pl=new THREE.PointLight(0x8888ff,2.5,60);pl.position.set(0,5,0);
+    scene.add(pl);presetMeshes.push(pl);
+    setStatus('FLOATING PLATFORMS');fadeStatus(2000);
+  }
+
+  function buildPresetHallway() {
+    // Infinite Hallway — receding corridor of rectangular frames
+    setSceneVisible(false); scene.fog=new THREE.FogExp2(0x020010,0.022);
+    const COL=[0x9b7dff,0x7db8ff,0xffffff,0xff7db0,0x7dffc8];
+    for(let i=0;i<20;i++){
+      const z=-1-i*4.8;
+      const sc=1+i*0.04, W=7*sc, H=4.5*sc;
+      const pts=new Float32Array([-W/2,-H/2,0,W/2,-H/2,0,W/2,-H/2,0,W/2,H/2,0,W/2,H/2,0,-W/2,H/2,0,-W/2,H/2,0,-W/2,-H/2,0]);
+      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));
+      const col=COL[i%COL.length];
+      const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.7-i*0.025});
+      const line=new THREE.LineSegments(geo,mat);
+      line.position.z=z;
+      line.userData.animate=(t)=>{line.material.opacity=(0.65-i*0.025)*(0.6+Math.sin(t*0.5+i*0.3)*0.4);};
+      scene.add(line);presetMeshes.push(line);
+      // Floor/ceiling cross beams
+      if(i%3===0){
+        const beam=new THREE.Mesh(new THREE.BoxGeometry(W,0.04,0.04),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.3}));
+        beam.position.set(0,-H/2,z);scene.add(beam);presetMeshes.push(beam);
+      }
+    }
+    setStatus('INFINITE HALLWAY');fadeStatus(2000);
+  }
+
+  function buildPresetGridworld() {
+    // Grid World — vast flat grid extending in depth, with floating markers
+    setSceneVisible(false); scene.fog=new THREE.FogExp2(0x000820,0.012);
+    // Main floor grid
+    const grid=new THREE.GridHelper(120,30,0x4444ff,0x111144);
+    grid.position.set(0,-4,-30);scene.add(grid);presetMeshes.push(grid);
+    // Vertical marker pillars at varying depths
+    const mcols=[0x00e5ff,0xff2080,0x00ff80,0xaa00ff];
+    for(let i=0;i<18;i++){
+      const x=(i%6-2.5)*9, z=-5-Math.floor(i/6)*14;
+      const col=mcols[i%4];
+      const pillar=new THREE.Mesh(new THREE.BoxGeometry(0.12,5+Math.random()*4,0.12),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.6}));
+      pillar.position.set(x,-2,z);
+      // Top glow
+      const gTex=radialTex(64,[[0,`rgba(${(col>>16)&255},${(col>>8)&255},${col&255},0.8)`],[1,'rgba(0,0,0,0)']]);
+      const glow=mkSoftPlane(gTex,2.5,2.5,x,1.5+pillar.geometry.parameters.height/2,z,0);
+      const ph=i*0.7;
+      glow.userData.animate=(t)=>{glow.material.opacity=0.4+Math.sin(t*0.9+ph)*0.3;glow.scale.setScalar(0.85+Math.sin(t*0.9+ph)*0.2);};
+      scene.add(pillar,glow);presetMeshes.push(pillar,glow);
+    }
+    setStatus('GRID WORLD');fadeStatus(2000);
+  }
+
+  function buildPresetEnergy() {
+    // Energy Waves — concentric expanding rings and sinuous energy streams
+    setSceneVisible(false); scene.fog=null;
+    // Pulsing rings at 3 depth planes
+    [[0,0,-8,0x00e5ff],[3,-2,-16,0xff2080],[-2,2,-28,0x00ff80],[-4,1,-20,0xaa00ff],[2,-3,-12,0xffff00]].forEach(([x,y,z,col],i)=>{
+      for(let r=0;r<4;r++){
+        const ring=new THREE.Mesh(new THREE.TorusGeometry(0.4+r*0.85,0.025,6,80),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.7-r*0.12,depthWrite:false,blending:THREE.AdditiveBlending}));
+        ring.position.set(x,y,z);
+        const ph=i*0.7+r*0.4,spd=0.8-r*0.12;
+        ring.userData.animate=(t)=>{const sc=0.6+Math.sin(t*spd+ph)*0.4+0.5;ring.scale.setScalar(sc);ring.material.opacity=(0.65-r*0.12)*Math.max(0,Math.sin(t*spd+ph));ring.rotation.z+=0.008;ring.rotation.x+=0.005;};
+        scene.add(ring);presetMeshes.push(ring);
+      }
+    });
+    setStatus('ENERGY WAVES');fadeStatus(2000);
+  }
+
+  function buildPresetCrystalCave() {
+    // Crystal Cave — stalagmites/stalactites of icosahedra at close range
+    setSceneVisible(false); scene.fog=new THREE.FogExp2(0x010018,0.04);
+    const caveLight=new THREE.PointLight(0x8844ff,2.8,35);caveLight.position.set(0,0,-8);
+    scene.add(caveLight);presetMeshes.push(caveLight);
+    for(let i=0;i<55;i++){
+      const isTop=i%2===0;
+      const x=(Math.random()-0.5)*12, z=-1-Math.pow(Math.random(),0.6)*18;
+      const h=0.3+Math.pow(Math.random(),0.4)*2.8;
+      const sz=0.12+Math.random()*0.28;
+      const cols=[0x8844ff,0xcc44aa,0x4488ff,0xaaeeff,0xffeeff];
+      const col=cols[Math.floor(Math.random()*cols.length)];
+      const geo=new THREE.ConeGeometry(sz,h,6);
+      const mat=new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:0.3,roughness:0.1,metalness:0.8});
+      const m=new THREE.Mesh(geo,mat);
+      m.position.set(x,isTop?3.5+h/2:-3.5-h/2,z);
+      m.rotation.z=isTop?Math.PI:0;
+      m.rotation.y=Math.random()*Math.PI*2;
+      scene.add(m);presetMeshes.push(m);
+    }
+    setStatus('CRYSTAL CAVE');fadeStatus(2000);
+  }
+
+  function buildPresetVoid() {
+    // Void — minimal floating cubes in pure darkness — silence and depth
+    setSceneVisible(false); scene.fog=null;
+    const DEPTH_LAYERS=[{z:-3,n:5,s:0.5},{z:-9,n:8,s:0.35},{z:-18,n:12,s:0.22},{z:-32,n:16,s:0.14},{z:-55,n:20,s:0.08}];
+    DEPTH_LAYERS.forEach(({z,n,s})=>{
+      for(let i=0;i<n;i++){
+        const col=new THREE.Color().setHSL(0.72+Math.random()*0.1,0.6,0.35+Math.random()*0.35);
+        const m=new THREE.Mesh(new THREE.BoxGeometry(s,s,s),new THREE.MeshBasicMaterial({color:col,wireframe:true,transparent:true,opacity:0.5,depthWrite:false,blending:THREE.AdditiveBlending}));
+        m.position.set((Math.random()-0.5)*20,(Math.random()-0.5)*12,z+(Math.random()-0.5)*2);
+        const rx=(Math.random()-0.5)*0.008,ry=(Math.random()-0.5)*0.011;
+        m.userData.animate=()=>{m.rotation.x+=rx;m.rotation.y+=ry;};
+        scene.add(m);presetMeshes.push(m);
+      }
+    });
+    setStatus('THE VOID');fadeStatus(2000);
+  }
+
+  function buildPresetLightBeams() {
+    // Light Beams — volumetric-ish cone beams at varying depths
+    setSceneVisible(false); scene.fog=null;
+    const BEAMS=[[0,4,-6,0xffffff,0.28],[3,-2,-12,0x8844ff,0.22],[-4,3,-10,0x00e5ff,0.2],[0,-4,-20,0xff2080,0.18],[-5,-2,-18,0xffff00,0.16],[4,2,-28,0x00ff80,0.14]];
+    BEAMS.forEach(([x,y,z,col,op],i)=>{
+      const h=12+Math.random()*8;
+      const geo=new THREE.ConeGeometry(2.5+Math.random()*1.5,h,12,1,true);
+      const mat=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:op,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
+      const m=new THREE.Mesh(geo,mat);
+      m.position.set(x,y+h/2,z);
+      m.rotation.z=(Math.random()-0.5)*0.4;
+      const ph=i*0.88;
+      m.userData.animate=(t)=>{m.material.opacity=op*(0.5+Math.sin(t*0.4+ph)*0.5);};
+      scene.add(m);presetMeshes.push(m);
+      // Bright spot at beam source
+      const sTex=radialTex(64,[[0,`rgba(${(col>>16)&255},${(col>>8)&255},${col&255},1.0)`],[0.3,'rgba(255,255,255,0.3)'],[1,'rgba(0,0,0,0)']]);
+      const spot=mkSoftPlane(sTex,3,3,x,y+h,z,0);
+      spot.userData.animate=(t)=>{spot.material.opacity=0.6+Math.sin(t*0.4+ph)*0.35;};
+      scene.add(spot);presetMeshes.push(spot);
+    });
+    setStatus('LIGHT BEAMS');fadeStatus(2000);
+  }
+
+  // ── Planet close-up (Holoscape-style) ──────────────────────────────
+  // Large textured sphere in foreground with atmosphere glow, 3 moons at
+  // different depths and orbital planes, distant star backdrop.
+  // Off-axis projection makes the planet feel HUGE — moving your head reveals
+  // its curvature, the moons at different Z planes shift at different rates.
+  function buildPresetPlanet() {
+    setSceneVisible(true);
+    scene.fog = null;
+
+    // Strong key light from upper-right — hard terminator line
+    const sunLight = new THREE.DirectionalLight(0xfff5e0, 2.8);
+    sunLight.position.set(12, 8, 15);
+    const fillLight = new THREE.AmbientLight(0x0a0820, 0.35);
+    scene.add(sunLight, fillLight);
+    presetMeshes.push(sunLight, fillLight);
+
+    // Main planet — large, close, occupies most of view
+    const planet = new THREE.Mesh(
+      new THREE.SphereGeometry(5.5, 64, 40),
+      new THREE.MeshStandardMaterial({
+        color: 0x2255aa,
+        emissive: 0x050818,
+        emissiveIntensity: 1.0,
+        roughness: 0.88,
+        metalness: 0.0,
+      })
+    );
+    planet.position.set(1.5, -0.8, -12);
+    // Subtle slow axial rotation
+    planet.userData.animate = (t) => { planet.rotation.y = t * 0.06; };
+    scene.add(planet);
+    presetMeshes.push(planet);
+
+    // Atmosphere glow — additive layered planes
+    const atmTex1 = radialTex(256, [
+      [0,    'rgba(60,140,255,0.0)'],
+      [0.52, 'rgba(40,100,255,0.0)'],
+      [0.62, 'rgba(60,160,255,0.38)'],
+      [0.72, 'rgba(80,180,255,0.18)'],
+      [0.85, 'rgba(40,100,220,0.07)'],
+      [1,    'rgba(0,0,0,0)'],
+    ]);
+    const atm1 = mkSoftPlane(atmTex1, 14, 14, 1.5, -0.8, -11.5, 0);
+    atm1.userData.animate = (t) => { atm1.material.opacity = 0.65 + Math.sin(t * 0.18) * 0.08; };
+    scene.add(atm1);
+    presetMeshes.push(atm1);
+
+    // Thin outer halo (very subtle, shifts most under head movement — it's closest)
+    const haloTex = radialTex(128, [
+      [0,    'rgba(80,160,255,0.0)'],
+      [0.60, 'rgba(80,160,255,0.0)'],
+      [0.72, 'rgba(80,160,255,0.22)'],
+      [0.88, 'rgba(60,120,220,0.08)'],
+      [1,    'rgba(0,0,0,0)'],
+    ]);
+    const halo = mkSoftPlane(haloTex, 15.5, 15.5, 1.5, -0.8, -11.2, 0);
+    scene.add(halo);
+    presetMeshes.push(halo);
+
+    // City lights on dark side — faint warm glow texture
+    const cityTex = radialTex(128, [
+      [0,   'rgba(255,200,80,0.0)'],
+      [0.45,'rgba(255,200,80,0.0)'],
+      [0.52,'rgba(255,200,80,0.12)'],
+      [0.62,'rgba(255,160,40,0.06)'],
+      [1,   'rgba(0,0,0,0)'],
+    ]);
+    const cities = mkSoftPlane(cityTex, 12.5, 12.5, 2.8, -1.8, -11.8, -0.4);
+    scene.add(cities);
+    presetMeshes.push(cities);
+
+    // Moon 1 — largest, closest, upper-right
+    const moon1 = new THREE.Mesh(
+      new THREE.SphereGeometry(0.55, 24, 16),
+      new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.95, metalness: 0.0 })
+    );
+    moon1.userData.animate = (t) => {
+      moon1.position.set(
+        1.5 + Math.cos(t * 0.28) * 9.5,
+        -0.8 + Math.sin(t * 0.28) * 2.2,
+        -12 + Math.sin(t * 0.28) * 4.5
+      );
+      moon1.rotation.y = t * 0.12;
+    };
+    scene.add(moon1);
+    presetMeshes.push(moon1);
+
+    // Moon 2 — smaller, farther back, inclined orbital plane
+    const moon2 = new THREE.Mesh(
+      new THREE.SphereGeometry(0.32, 16, 12),
+      new THREE.MeshStandardMaterial({ color: 0xccb888, roughness: 0.90, metalness: 0.0 })
+    );
+    moon2.userData.animate = (t) => {
+      moon2.position.set(
+        1.5 + Math.cos(t * 0.18 + 2.1) * 12,
+        -0.8 + Math.sin(t * 0.22 + 1.0) * 5.5,
+        -12 + Math.sin(t * 0.18 + 2.1) * 6
+      );
+    };
+    scene.add(moon2);
+    presetMeshes.push(moon2);
+
+    // Moon 3 — tiny, very close, fast
+    const moon3 = new THREE.Mesh(
+      new THREE.SphereGeometry(0.14, 12, 8),
+      new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.80, metalness: 0.1 })
+    );
+    moon3.userData.animate = (t) => {
+      moon3.position.set(
+        1.5 + Math.cos(t * 0.55 + 4.0) * 7.2,
+        -0.8 + Math.sin(t * 0.55 + 4.0) * 1.5,
+        -12 + Math.sin(t * 0.55 + 4.0) * 2.8
+      );
+    };
+    scene.add(moon3);
+    presetMeshes.push(moon3);
+
+    // Distant rings — thin torus in equatorial plane
+    const ring1 = new THREE.Mesh(
+      new THREE.TorusGeometry(8.2, 0.12, 4, 120),
+      new THREE.MeshBasicMaterial({ color: 0xbbaa88, transparent: true, opacity: 0.28, depthWrite: false, side: THREE.DoubleSide })
+    );
+    ring1.position.set(1.5, -0.8, -12);
+    ring1.rotation.x = Math.PI * 0.38;
+    ring1.userData.animate = (t) => { ring1.rotation.z = t * 0.02; };
+    scene.add(ring1);
+    presetMeshes.push(ring1);
+
+    setStatus('PLANET CLOSE-UP'); fadeStatus(2000);
+  }
+
+  // ── Floating City ──────────────────────────────────────────────────
+  // Layered architectural blocks at 6 depth levels.
+  // Near: large building facades. Far: tiny distant towers.
+  // Strong occlusion + size contrast = excellent depth reading.
+  function buildPresetFloatingCity() {
+    setSceneVisible(false);
+    scene.fog = new THREE.FogExp2(0x020010, 0.016);
+
+    const cityLight = new THREE.DirectionalLight(0xaaccff, 1.6);
+    cityLight.position.set(-6, 12, 5);
+    const ambCity = new THREE.AmbientLight(0x050510, 0.8);
+    scene.add(cityLight, ambCity);
+    presetMeshes.push(cityLight, ambCity);
+
+    // Building definition: [depth, x, y, w, h, d, col]
+    const LAYERS = [
+      // Foreground — large, few
+      {z:-3,  buildings:[{x:0,  y:-1.5,w:1.4,h:3.5,d:1.0,c:0x4466cc},{x:2.2,y:-0.8,w:1.0,h:4.5,d:0.8,c:0x334488},{x:-2.4,y:-1.2,w:1.2,h:3.0,d:0.9,c:0x5577dd}]},
+      // Near-mid
+      {z:-7,  buildings:[{x:-4, y:-2,  w:0.9,h:5.5,d:0.8,c:0x556699},{x:0.5,y:-2,  w:1.1,h:4.0,d:0.9,c:0x6677aa},{x:4,  y:-2,  w:0.7,h:6.0,d:0.7,c:0x445588},{x:-1.8,y:-2,w:0.6,h:3.2,d:0.6,c:0x334477}]},
+      // Mid
+      {z:-14, buildings:[{x:-6, y:-3,  w:0.7,h:7.0,d:0.7,c:0x3344aa},{x:-2, y:-3,  w:0.5,h:5.5,d:0.5,c:0x2233bb},{x:1,  y:-3,  w:0.8,h:8.5,d:0.7,c:0x1122cc},{x:4,  y:-3,  w:0.6,h:6.0,d:0.6,c:0x334499},{x:6.5,y:-3,  w:0.5,h:5.0,d:0.5,c:0x223388}]},
+      // Far-mid
+      {z:-24, buildings:[{x:-8, y:-4,  w:0.5,h:9.0,d:0.5,c:0x2233aa},{x:-4, y:-4,  w:0.4,h:7.0,d:0.4,c:0x1122bb},{x:0,  y:-4,  w:0.6,h:11.0,d:0.5,c:0x1133cc},{x:3,  y:-4,  w:0.4,h:8.0,d:0.4,c:0x223399},{x:7,  y:-4,  w:0.3,h:7.0,d:0.3,c:0x112288},{x:-6, y:-4,  w:0.4,h:6.5,d:0.4,c:0x2244aa}]},
+      // Far
+      {z:-38, buildings:[{x:-10,y:-5,  w:0.3,h:12.0,d:0.3,c:0x1122aa},{x:-6, y:-5,  w:0.3,h:9.0,d:0.3,c:0x0011bb},{x:-2, y:-5,  w:0.4,h:14.0,d:0.3,c:0x1133cc},{x:2,  y:-5,  w:0.3,h:10.0,d:0.3,c:0x1122bb},{x:5,  y:-5,  w:0.3,h:12.0,d:0.3,c:0x0011aa},{x:8,  y:-5,  w:0.2,h:9.0,d:0.2,c:0x0022aa},{x:-8, y:-5,  w:0.2,h:8.0,d:0.2,c:0x001199}]},
+      // Very far
+      {z:-60, buildings:[{x:-12,y:-6,  w:0.2,h:16.0,d:0.2,c:0x001188},{x:-7, y:-6,  w:0.2,h:12.0,d:0.2,c:0x001177},{x:-2, y:-6,  w:0.2,h:18.0,d:0.2,c:0x001199},{x:3,  y:-6,  w:0.2,h:13.0,d:0.2,c:0x001188},{x:7,  y:-6,  w:0.2,h:15.0,d:0.2,c:0x001177},{x:11, y:-6,  w:0.2,h:11.0,d:0.2,c:0x001166}]},
+    ];
+
+    LAYERS.forEach(({z, buildings}) => {
+      buildings.forEach(b => {
+        const col = new THREE.Color(b.c);
+        const mat = new THREE.MeshStandardMaterial({
+          color: col,
+          emissive: col,
+          emissiveIntensity: 0.08,
+          roughness: 0.75,
+          metalness: 0.35,
+        });
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(b.w, b.h, b.d), mat);
+        mesh.position.set(b.x, b.y + b.h * 0.5, z);
+        scene.add(mesh);
+        presetMeshes.push(mesh);
+
+        // Window lights on buildings — small emissive planes
+        if(b.h > 3.5) {
+          const windowRows = Math.floor(b.h / 1.2);
+          for(let r = 0; r < windowRows; r++) {
+            const wLight = new THREE.Mesh(
+              new THREE.PlaneGeometry(b.w * 0.7, 0.08),
+              new THREE.MeshBasicMaterial({
+                color: 0xffeebb, transparent: true,
+                opacity: 0.25 + Math.random() * 0.35,
+                depthWrite: false, blending: THREE.AdditiveBlending
+              })
+            );
+            wLight.position.set(b.x, b.y + r * 1.2 + 0.6, z + b.d * 0.5 + 0.01);
+            scene.add(wLight);
+            presetMeshes.push(wLight);
+          }
+        }
+      });
+    });
+
+    // Ground plane
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(120, 60),
+      new THREE.MeshStandardMaterial({ color: 0x080818, roughness: 0.9, metalness: 0.2 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.set(0, -5, -30);
+    scene.add(ground);
+    presetMeshes.push(ground);
+
+    setStatus('FLOATING CITY'); fadeStatus(2000);
+  }
+
   // ── Preset dispatcher ────────────────────────────────
   function setPreset(name) {
     clearPreset();
@@ -1206,23 +1806,37 @@
     isPanoActive  = false;
     cam3.rotation.set(0, 0, 0);
     cam3.updateProjectionMatrix();
-    // Vignette intensity by preset type
+    restoreFog();
+
     const vig = el('vignette');
-    if(vig) vig.style.opacity = ['space','aurora','nebula','binary','galaxy'].includes(name) ? '1' : '0.7';
+    if(vig) vig.style.opacity = ['space','aurora','nebula','binary','galaxy','starcluster','crystalcave','void'].includes(name) ? '1' : '0.65';
 
     switch(name){
-      case 'space':    buildPresetSpace();    break;
-      case 'solar':    buildPresetSolar();    break;
-      case 'aurora':   buildPresetAurora();   break;
-      case 'neon':     buildPresetNeon();     break;
-      case 'portal':   buildPresetPortal();   break;
-      case 'wormhole': buildPresetWormhole(); break;
-      case 'crystal':  buildPresetCrystal();  break;
-      case 'galaxy':   buildPresetGalaxy();   break;
-      case 'binary':   buildPresetBinary();   break;
-      case 'nebula':   buildPresetNebula();   break;
+      case 'space':       buildPresetSpace();       break;
+      case 'solar':       buildPresetSolar();       break;
+      case 'aurora':      buildPresetAurora();      break;
+      case 'neon':        buildPresetNeon();        break;
+      case 'portal':      buildPresetPortal();      break;
+      case 'wormhole':    buildPresetWormhole();    break;
+      case 'crystal':     buildPresetCrystal();     break;
+      case 'galaxy':      buildPresetGalaxy();      break;
+      case 'binary':      buildPresetBinary();      break;
+      case 'nebula':      buildPresetNebula();      break;
+      case 'asteroid':    buildPresetAsteroid();    break;
+      case 'starcluster': buildPresetStarcluster(); break;
+      case 'storm':       buildPresetStorm();       break;
+      case 'tunnel':      buildPresetTunnel();      break;
+      case 'swarm':       buildPresetSwarm();       break;
+      case 'platforms':   buildPresetPlatforms();   break;
+      case 'hallway':     buildPresetHallway();     break;
+      case 'gridworld':   buildPresetGridworld();   break;
+      case 'energy':      buildPresetEnergy();      break;
+      case 'crystalcave': buildPresetCrystalCave(); break;
+      case 'void':        buildPresetVoid();        break;
+      case 'lightbeams':  buildPresetLightBeams();  break;
+      case 'planet':      buildPresetPlanet();      break;
+      case 'floatingcity':buildPresetFloatingCity();break;
     }
-    // Highlight active button
     document.querySelectorAll('.preset-btn').forEach(b=>{
       const a=b.dataset.preset===name;
       b.style.borderColor=a?'rgba(155,125,255,0.80)':'rgba(155,125,255,0.28)';
@@ -1428,6 +2042,28 @@
   bindSliders('d-depth', 'm-depth', 'd-depth-v', 'm-depth-v', 'depthScale', 2);
   bindSliders('d-smooth','m-smooth','d-smooth-v','m-smooth-v','smoothing',   3);
 
+  // Per-axis sliders (desktop only — not duplicated mobile to save space)
+  function bindSliderD(dId,dVId,key,dec,suffix){
+    const dEl=el(dId),dV=el(dVId);
+    if(!dEl) return;
+    dEl.value=CFG[key]; if(dV) dV.textContent=CFG[key].toFixed(dec)+(suffix||'');
+    dEl.addEventListener('input',e=>{CFG[key]=parseFloat(e.target.value);if(dV)dV.textContent=CFG[key].toFixed(dec)+(suffix||'');});
+  }
+  bindSliderD('d-sensx','d-sensx-v','sensX',2);
+  bindSliderD('d-sensy','d-sensy-v','sensY',2);
+  bindSliderD('d-sensz','d-sensz-v','sensZ',2);
+  bindSliderD('d-eyedist','d-eyedist-v','eyeDistMult',2);
+  bindSliderD('d-frustum','d-frustum-v','frustumScale',2);
+
+  // Pano sensitivity — desktop + mobile
+  function bindPanoSens(dId,mId,dVId,mVId){
+    const set=v=>{CFG.panoSens=v;const s=v.toFixed(2);setText(dVId,s);setText(mVId,s);const de=el(dId),me=el(mId);if(de)de.value=v;if(me)me.value=v;};
+    set(CFG.panoSens);
+    el(dId)?.addEventListener('input',e=>set(parseFloat(e.target.value)));
+    el(mId)?.addEventListener('input',e=>set(parseFloat(e.target.value)));
+  }
+  bindPanoSens('d-panosens','m-panosens','d-panosens-v','m-panosens-v');
+
   // FOV binding — updates camera and both slider displays
   function setFov(v) {
     CFG.fov = v; cam3.fov = v; cam3.updateProjectionMatrix();
@@ -1437,22 +2073,27 @@
   }
   el('d-fov')?.addEventListener('input', e=>setFov(parseFloat(e.target.value)));
   el('m-fov')?.addEventListener('input', e=>setFov(parseFloat(e.target.value)));
+
   function bindChecks(dId,mId,key){
     const dEl=el(dId),mEl=el(mId);
     const h=e=>{CFG[key]=e.target.checked;if(dEl)dEl.checked=CFG[key];if(mEl)mEl.checked=CFG[key];};
     if(dEl)dEl.addEventListener('change',h); if(mEl)mEl.addEventListener('change',h);
   }
   bindChecks('d-flipy','m-flipy','flipY');
+  bindChecks('d-invertx','m-invertx','invertX');
+  el('d-invertz')?.addEventListener('change',e=>{ CFG.invertZ=e.target.checked; });
 
   // Depth shader toggle
   el('d-depth-on')?.addEventListener('change', e => {
     CFG.depthOn = e.target.checked;
     if(depthShaderUniforms){
-      // Show/hide the depth mesh rather than disposing it
       const mesh = bgMeshes[bgMeshes.length-1];
       if(mesh) mesh.visible = CFG.depthOn;
     }
   });
+
+  // Off-axis projection toggle
+  el('d-offaxis')?.addEventListener('change', e => { CFG.offAxisOn = e.target.checked; });
 
   // Debug HUD toggle (checkbox + D key)
   function toggleDebug() {
