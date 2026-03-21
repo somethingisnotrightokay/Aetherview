@@ -100,7 +100,7 @@ Dynamic lights and shadows respond to camera movement
 
 📝 License
 
-This project is licensed under the MIT License — see the LICENSE file for details.
+This project is licensed under the CC BY-NC SA 4.0 License — see the LICENSE file for details.
 
 > You may use, modify, or host it freely, but you cannot sell it as your own product.
 
