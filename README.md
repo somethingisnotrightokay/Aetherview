@@ -60,7 +60,7 @@ It uses **off-axis projection**, the same principle as head-tracked displays. In
 
 AetherView runs entirely in your browser and can be **self-hosted anywhere** that serves static files: GitHub Pages, your personal web server, or locally.
 
-### Using GitHub Pages:
+### Using it locally (Limited Mode):
 
 ```bash
 # Clone the repository
