@@ -191,38 +191,48 @@
   </div>
 
   <!-- Desktop settings -->
-  <div id="settings" class="panel" style="top:24px;right:24px;padding:20px 22px 16px;min-width:300px;max-height:88vh;overflow-y:auto;">
+  <div id="settings" class="panel" style="top:24px;right:24px;padding:20px 22px 16px;min-width:310px;max-height:88vh;overflow-y:auto;">
     <h3>AetherView</h3>
-
-    <!-- Camera source -->
-    <div class="s-row">
-      <label>Camera</label>
-      <select id="cam-select-d"><option value="">Detecting...</option></select>
-    </div>
+    <div class="s-row"><label>Camera</label><select id="cam-select-d"><option value="">Detecting...</option></select></div>
 
     <hr class="div">
-    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Camera Controls</div>
+    <div class="sh-sec" style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">🧠 Tracking</div>
     <div class="s-row"><label>Sensitivity</label><input type="range" id="d-sens" min="0.05" max="3" step="0.05" value="0.8"><span class="val" id="d-sens-v">0.80</span></div>
     <div class="s-row"><label>X Sensitivity</label><input type="range" id="d-sensx" min="0.1" max="3" step="0.05" value="1.0"><span class="val" id="d-sensx-v">1.00</span></div>
     <div class="s-row"><label>Y Sensitivity</label><input type="range" id="d-sensy" min="0.1" max="3" step="0.05" value="1.0"><span class="val" id="d-sensy-v">1.00</span></div>
     <div class="s-row"><label>Z Sensitivity</label><input type="range" id="d-sensz" min="0.1" max="3" step="0.05" value="1.0"><span class="val" id="d-sensz-v">1.00</span></div>
     <div class="s-row"><label>Smoothing</label><input type="range" id="d-smooth" min="0.01" max="0.5" step="0.005" value="0.08"><span class="val" id="d-smooth-v">0.080</span></div>
+    <div class="s-row"><label>Z Smoothing</label><input type="range" id="d-dsmooth" min="0.005" max="0.3" step="0.005" value="0.04"><span class="val" id="d-dsmooth-v">0.040</span></div>
+    <div class="s-row"><label>Deadzone</label><input type="range" id="d-dead" min="0" max="0.2" step="0.005" value="0.02"><span class="val" id="d-dead-v">0.02</span></div>
+    <div class="s-row"><label>Max Clamp</label><input type="range" id="d-clamp" min="0.3" max="3" step="0.05" value="1.4"><span class="val" id="d-clamp-v">1.40</span></div>
     <div class="s-row cb-row"><label>Invert X</label><input type="checkbox" id="d-invertx"><span class="note">flip left/right</span></div>
     <div class="s-row cb-row"><label>Invert Y</label><input type="checkbox" id="d-flipy"><span class="note">flip up/down</span></div>
     <div class="s-row cb-row"><label>Invert Z</label><input type="checkbox" id="d-invertz"><span class="note">flip depth</span></div>
+    <div style="margin-top:6px;"><button class="preset-btn" onclick="recalibrate()">⟳ Recalibrate</button></div>
 
     <hr class="div">
-    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Projection</div>
+    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">🎥 Camera</div>
     <div class="s-row"><label>FOV</label><input type="range" id="d-fov" min="30" max="100" step="1" value="60"><span class="val" id="d-fov-v">60°</span></div>
-    <div class="s-row"><label>Depth Scale</label><input type="range" id="d-depth" min="0.1" max="4" step="0.05" value="1.0"><span class="val" id="d-depth-v">1.00</span></div>
+    <div class="s-row"><label>Yaw Strength</label><input type="range" id="d-yaw" min="0.1" max="3" step="0.05" value="1.0"><span class="val" id="d-yaw-v">1.00</span></div>
+    <div class="s-row"><label>Pitch Strength</label><input type="range" id="d-pitch" min="0.1" max="3" step="0.05" value="1.0"><span class="val" id="d-pitch-v">1.00</span></div>
     <div class="s-row"><label>Eye Distance</label><input type="range" id="d-eyedist" min="0.2" max="3" step="0.05" value="1.0"><span class="val" id="d-eyedist-v">1.00</span></div>
     <div class="s-row"><label>Frustum Width</label><input type="range" id="d-frustum" min="0.3" max="3" step="0.05" value="1.0"><span class="val" id="d-frustum-v">1.00</span></div>
     <div class="s-row"><label>Pano Sens</label><input type="range" id="d-panosens" min="0.1" max="3" step="0.05" value="1.0"><span class="val" id="d-panosens-v">1.00</span></div>
 
     <hr class="div">
-    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Modes</div>
+    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">🖼️ Rendering</div>
+    <div class="s-row"><label>Depth Scale</label><input type="range" id="d-depth" min="0.1" max="4" step="0.05" value="1.0"><span class="val" id="d-depth-v">1.00</span></div>
+    <div class="s-row"><label>Brightness</label><input type="range" id="d-bright" min="0.4" max="2.0" step="0.05" value="1.0"><span class="val" id="d-bright-v">1.00</span></div>
+    <div class="s-row"><label>Contrast</label><input type="range" id="d-contrast" min="0.4" max="2.0" step="0.05" value="1.0"><span class="val" id="d-contrast-v">1.00</span></div>
+    <div class="s-row"><label>Saturation</label><input type="range" id="d-sat" min="0.0" max="3.0" step="0.05" value="1.0"><span class="val" id="d-sat-v">1.00</span></div>
+    <div class="s-row"><label>Fog Density</label><input type="range" id="d-fog" min="0.0" max="3.0" step="0.05" value="1.0"><span class="val" id="d-fog-v">1.00</span></div>
+
+    <hr class="div">
+    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">🎛️ Modes</div>
     <div class="s-row cb-row"><label>Off-Axis</label><input type="checkbox" id="d-offaxis" checked><span class="note">window projection</span></div>
     <div class="s-row cb-row"><label>Depth FX</label><input type="checkbox" id="d-depth-on" checked><span class="note">depth shader</span></div>
+    <div class="s-row cb-row"><label>Particles</label><input type="checkbox" id="d-particles" checked><span class="note">stars/points</span></div>
+    <div class="s-row cb-row"><label>Fog</label><input type="checkbox" id="d-fog-on" checked><span class="note">scene fog</span></div>
     <div class="s-row cb-row"><label>Debug HUD</label><input type="checkbox" id="d-debug"><span class="note">camera state</span></div>
 
     <hr class="div">
@@ -248,27 +258,34 @@
     <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px;">
       <button class="preset-btn" data-preset="crystal">Crystal</button>
       <button class="preset-btn" data-preset="crystalv2">Crystal II</button>
-      <button class="preset-btn" data-preset="storm">Crystal Storm</button>
-      <button class="preset-btn" data-preset="tunnel">Geo Tunnel</button>
+      <button class="preset-btn" data-preset="storm">Storm</button>
+      <button class="preset-btn" data-preset="tunnel">Tunnel</button>
       <button class="preset-btn" data-preset="portal">Portal</button>
       <button class="preset-btn" data-preset="portalv2">Portal II</button>
       <button class="preset-btn" data-preset="wormhole">Wormhole</button>
-      <button class="preset-btn" data-preset="swarm">Depth Swarm</button>
+      <button class="preset-btn" data-preset="swarm">Swarm</button>
       <button class="preset-btn" data-preset="platforms">Platforms</button>
       <button class="preset-btn" data-preset="floatingcity">Float City</button>
+      <button class="preset-btn" data-preset="cluster">Cluster</button>
     </div>
-    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Presets — Structured</div>
+    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Presets — Real-World</div>
     <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px;">
-      <button class="preset-btn" data-preset="neon">Neon Grid</button>
-      <button class="preset-btn" data-preset="hallway">Hallway</button>
-      <button class="preset-btn" data-preset="gridworld">Grid World</button>
+      <button class="preset-btn" data-preset="forest">Forest</button>
+      <button class="preset-btn" data-preset="citystreet">City</button>
+      <button class="preset-btn" data-preset="mountain">Mountain</button>
+      <button class="preset-btn" data-preset="interior">Interior</button>
+      <button class="preset-btn" data-preset="spacestation">Station</button>
+      <button class="preset-btn" data-preset="reef">Reef</button>
+      <button class="preset-btn" data-preset="nebulav2">Nebula+</button>
     </div>
-    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(155,125,255,0.42);margin-bottom:8px;">Presets — Experimental</div>
-    <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px;">
-      <button class="preset-btn" data-preset="energy">Energy Waves</button>
-      <button class="preset-btn" data-preset="crystalcave">Crystal Cave</button>
+    <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px;">
+      <button class="preset-btn" data-preset="neon">Neon</button>
+      <button class="preset-btn" data-preset="hallway">Hallway</button>
+      <button class="preset-btn" data-preset="gridworld">Grid</button>
+      <button class="preset-btn" data-preset="energy">Energy</button>
+      <button class="preset-btn" data-preset="crystalcave">Cave</button>
       <button class="preset-btn" data-preset="void">Void</button>
-      <button class="preset-btn" data-preset="lightbeams">Light Beams</button>
+      <button class="preset-btn" data-preset="lightbeams">Beams</button>
     </div>
 
     <hr class="div">
@@ -317,7 +334,17 @@
         <button class="m-btn preset-btn" data-preset="platforms" style="padding:8px 12px;font-size:10px;">Platforms</button>
         <button class="m-btn preset-btn" data-preset="floatingcity" style="padding:8px 12px;font-size:10px;">Float City</button>
       </div>
-      <div class="sh-sec">Structured &amp; Experimental</div>
+      <div class="sh-sec">Real-World &amp; Stylized</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;">
+        <button class="m-btn preset-btn" data-preset="forest" style="padding:8px 12px;font-size:10px;">Forest</button>
+        <button class="m-btn preset-btn" data-preset="citystreet" style="padding:8px 12px;font-size:10px;">City</button>
+        <button class="m-btn preset-btn" data-preset="mountain" style="padding:8px 12px;font-size:10px;">Mountain</button>
+        <button class="m-btn preset-btn" data-preset="interior" style="padding:8px 12px;font-size:10px;">Interior</button>
+        <button class="m-btn preset-btn" data-preset="spacestation" style="padding:8px 12px;font-size:10px;">Station</button>
+        <button class="m-btn preset-btn" data-preset="reef" style="padding:8px 12px;font-size:10px;">Reef</button>
+        <button class="m-btn preset-btn" data-preset="nebulav2" style="padding:8px 12px;font-size:10px;">Nebula+</button>
+        <button class="m-btn preset-btn" data-preset="cluster" style="padding:8px 12px;font-size:10px;">Cluster</button>
+      </div>
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;">
         <button class="m-btn preset-btn" data-preset="neon" style="padding:8px 12px;font-size:10px;">Neon</button>
         <button class="m-btn preset-btn" data-preset="hallway" style="padding:8px 12px;font-size:10px;">Hallway</button>
@@ -386,19 +413,35 @@
   /* ── CONFIG ── */
   const CFG = {
     sensitivity : 0.8,
-    sensX       : 1.0,   // per-axis multiplier on top of sensitivity
+    sensX       : 1.0,
     sensY       : 1.0,
     sensZ       : 1.0,
-    panoSens    : 1.0,   // separate sensitivity for panorama rotation
+    panoSens    : 1.0,
     depthScale  : 1.0,
     smoothing   : 0.08,
+    depthSmooth : 0.04,  // separate Z smoothing (slower = less jitter)
+    deadzone    : 0.02,  // head movement below this is ignored (normalised units)
+    maxClamp    : 1.4,   // maximum head offset before clamping
     flipY       : false,
     invertX     : false,
     invertZ     : false,
     fov         : 60,
-    eyeDistMult : 1.0,   // multiplies eye travel range (how far eye moves per head unit)
-    frustumScale: 1.0,   // multiplies SCREEN_HALF_W — widens/narrows virtual window
-    offAxisOn   : true,  // master off-axis toggle — when false, use simple cam rotation
+    eyeDistMult : 1.0,
+    frustumScale: 1.0,
+    offAxisOn   : true,
+    yawStrength : 1.0,   // scales yaw in pano mode
+    pitchStrength:1.0,   // scales pitch in pano mode
+    // Rendering
+    brightness  : 1.0,   // CSS filter on canvas
+    contrast    : 1.0,
+    saturation  : 1.0,
+    glowMult    : 1.0,   // runtime emissive scaler (applied when switching presets)
+    fogDensity  : 1.0,   // multiplies scene.fog density
+    // Scene toggles
+    showParticles:true,
+    showFog     : true,
+    showGlow    : true,
+    sceneScale  : 1.0,
     targetFPS   : isMobile ? 24 : 30,
     touchDrag   : true,
     depthOn     : true,
@@ -408,7 +451,10 @@
   /* ── HEAD STATE ── */
   const headRaw    = { x: 0, y: 0, z: 0 };
   const headSmooth = { x: 0, y: 0, z: 0 };
+  // Per-axis EMA buffers for jitter reduction (separate smoothing rates)
+  const _emaX = { v:0, a:0.08 }, _emaY = { v:0, a:0.08 }, _emaZ = { v:0, a:0.04 };
   let refNoseX = 0.5, refNoseY = 0.5, refEyeDist = 0;
+  let refFaceY = 0;   // reference for forehead-chin centroid
   let calibrated = false;
   let latestNose = null;
   let gyroBaseG  = null, gyroBaseB = null;
@@ -437,10 +483,11 @@
   });
   renderer.domElement.id = 'three';
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(1);
-  renderer.outputEncoding      = THREE.sRGBEncoding;        // r128 API (correct for this version)
-  renderer.toneMapping         = THREE.ACESFilmicToneMapping; // cinematic color grading
-  renderer.toneMappingExposure = 1.1;                        // slight boost — not blown out
+  renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5));
+  renderer.outputEncoding         = THREE.sRGBEncoding;
+  renderer.toneMapping            = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure    = 1.4;   // pushed for cinematic punch
+  renderer.physicallyCorrectLights = true; // lights obey inverse-square falloff
   renderer.setClearColor(0x020010, 1);
   document.body.appendChild(renderer.domElement);
 
@@ -475,12 +522,19 @@
      For the depth shader: eye position (not rotation) drives the UV offset.
   ─────────────────────────────────────────────────────────────────── */
   function applyOffAxis(hx, hy) {
+    // Deadzone — ignore tiny movements to reduce jitter at rest
+    const dz = CFG.deadzone;
+    const axX = Math.abs(hx) > dz ? (hx > 0 ? hx - dz : hx + dz) : 0;
+    const axY = Math.abs(hy) > dz ? (hy > 0 ? hy - dz : hy + dz) : 0;
+    // Clamp prevents extreme frustum distortion at movement limits
+    const cx = Math.max(-CFG.maxClamp, Math.min(CFG.maxClamp, axX));
+    const cy = Math.max(-CFG.maxClamp, Math.min(CFG.maxClamp, axY));
+
     if (isPanoActive) {
-      // Panorama: pure rotation model — look around inside sphere
       cam3.position.set(0, 0, BASE_EYE_Z);
       cam3.rotation.order = 'YXZ';
-      const px = (CFG.invertX ? -hx : hx) * CFG.sensitivity * CFG.sensX * CFG.panoSens * 0.4;
-      const py = (CFG.flipY  ?  hy : -hy) * CFG.sensitivity * CFG.sensY * CFG.panoSens * 0.3;
+      const px = (CFG.invertX ? -cx : cx) * CFG.sensitivity * CFG.sensX * CFG.panoSens * CFG.yawStrength * 0.4;
+      const py = (CFG.flipY  ?  cy : -cy) * CFG.sensitivity * CFG.sensY * CFG.panoSens * CFG.pitchStrength * 0.3;
       cam3.rotation.y = px;
       cam3.rotation.x = py;
       cam3.rotation.z = 0;
@@ -488,25 +542,23 @@
       return;
     }
 
-    const hxA = (CFG.invertX ? -hx : hx);
-    const hyA = (CFG.flipY   ?  hy : -hy);
+    const hxA = (CFG.invertX ? -cx : cx);
+    const hyA = (CFG.flipY   ?  cy : -cy);
     const zDepth = (CFG.invertZ ? -headSmooth.z : headSmooth.z) * CFG.sensZ;
 
     if (!CFG.offAxisOn) {
-      // Off-axis disabled — simple camera rotation fallback (still 3D, just symmetric frustum)
       cam3.position.set(0, 0, BASE_EYE_Z);
       cam3.rotation.order = 'YXZ';
-      cam3.rotation.y =  hxA * CFG.sensitivity * CFG.sensX * 0.22;
-      cam3.rotation.x = -hyA * CFG.sensitivity * CFG.sensY * 0.18;
+      cam3.rotation.y =  hxA * CFG.sensitivity * CFG.sensX * CFG.yawStrength * 0.22;
+      cam3.rotation.x = -hyA * CFG.sensitivity * CFG.sensY * CFG.pitchStrength * 0.18;
       cam3.rotation.z = 0;
       cam3.updateProjectionMatrix();
       return;
     }
 
-    // True off-axis window projection (Paul Bourke)
-    const eyeRange = CFG.sensitivity * 2.2 * CFG.eyeDistMult;
-    const eyeX = hxA * eyeRange * CFG.sensX;
-    const eyeY = hyA * eyeRange * CFG.sensY;
+    const eyeRange = CFG.sensitivity * 3.5 * CFG.eyeDistMult;  // 3.5 = aggressive parallax (was 2.2)
+    const eyeX = hxA * eyeRange * CFG.sensX * CFG.yawStrength;
+    const eyeY = hyA * eyeRange * CFG.sensY * CFG.pitchStrength;
     const D    = SCREEN_DIST * Math.max(0.5, 1 - zDepth * 0.25);
 
     cam3.position.set(eyeX, eyeY, BASE_EYE_Z);
@@ -1615,21 +1667,22 @@
     scene.add(sunLight, fillLight, rimLight);
     presetMeshes.push(sunLight, fillLight, rimLight);
 
-    // ── Near-field debris — z = -3 to -6, shifts a LOT under head movement
+    // ── Near-field debris — z = -2 to -4, these SCREAM parallax ──
     const debrisCols = [0x888899, 0x776688, 0x998877, 0xaaaaaa, 0x6677aa];
-    for(let i = 0; i < 14; i++){
-      const r = 0.04 + Math.random() * 0.18;
+    for(let i = 0; i < 20; i++){  // more debris than before
+      const r = 0.04 + Math.random() * 0.22;
       const geo = i % 3 === 0 ? new THREE.IcosahedronGeometry(r, 0)
                : i % 3 === 1 ? new THREE.OctahedronGeometry(r)
                :                new THREE.DodecahedronGeometry(r, 0);
       const mat = new THREE.MeshStandardMaterial({
         color: debrisCols[i % debrisCols.length],
-        roughness: 0.92, metalness: 0.08
+        roughness: 0.88, metalness: 0.12,
+        emissive: 0x111120, emissiveIntensity: 0.3,
       });
       const m = new THREE.Mesh(geo, mat);
-      m.position.set((Math.random()-0.5)*16, (Math.random()-0.5)*9, -3 - Math.random()*3);
+      m.position.set((Math.random()-0.5)*18, (Math.random()-0.5)*10, -2 - Math.random()*2);
       m.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0);
-      const rx = (Math.random()-0.5)*0.006, ry = (Math.random()-0.5)*0.009;
+      const rx = (Math.random()-0.5)*0.008, ry = (Math.random()-0.5)*0.012;
       m.userData.animate = () => { m.rotation.x+=rx; m.rotation.y+=ry; };
       scene.add(m); presetMeshes.push(m);
     }
@@ -2076,6 +2129,533 @@
     setStatus('PORTAL V2'); fadeStatus(2000);
   }
 
+  // ══════════════════════════════════════════════════════════
+  //  PHASE 7 — REAL-WORLD & STYLIZED SCENES
+  // ══════════════════════════════════════════════════════════
+
+  // ── Forest — trees, fog, ground, scattered undergrowth ──
+  function buildPresetForest() {
+    setSceneVisible(false);
+    scene.fog = new THREE.FogExp2(0x061008, 0.032);
+    renderer.setClearColor(0x061008, 1);
+
+    const sun = new THREE.DirectionalLight(0xffe8aa, 6.0);  sun.position.set(10,18,12);
+    const amb = new THREE.AmbientLight(0x0a1808, 0.4);
+    const fill = new THREE.DirectionalLight(0x204808, 0.8);  fill.position.set(-6,3,-8);
+    const bounce = new THREE.PointLight(0x88aa44, 2.5, 20); bounce.position.set(0,-1,-10);
+    scene.add(sun,amb,fill,bounce); presetMeshes.push(sun,amb,fill,bounce);
+
+    const gnd = new THREE.Mesh(new THREE.PlaneGeometry(100,100),
+      new THREE.MeshStandardMaterial({color:0x152208,roughness:0.96,metalness:0.0}));
+    gnd.rotation.x=-Math.PI/2; gnd.position.set(0,-3.5,-35);
+    scene.add(gnd); presetMeshes.push(gnd);
+
+    // EXTREME FOREGROUND z=-1.5 to -2.5: large leaves right in face
+    for(let i=0;i<22;i++){
+      const w=0.4+Math.random()*1.2, h=0.25+Math.random()*0.8;
+      const greens=[0x2a6c10,0x1e5c08,0x366218,0x2a7014];
+      const col=greens[i%greens.length];
+      const leaf=new THREE.Mesh(new THREE.PlaneGeometry(w,h),
+        new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:0.08,roughness:0.85,metalness:0.0,transparent:true,opacity:0.88+Math.random()*0.12,side:THREE.DoubleSide}));
+      leaf.position.set((Math.random()-0.5)*12,(Math.random()-0.5)*6,-1.5-Math.random()*1.0);
+      leaf.rotation.set((Math.random()-0.5)*0.6,(Math.random()-0.5)*1.2,(Math.random()-0.5)*0.8);
+      const ph=Math.random()*Math.PI*2;
+      leaf.userData.animate=t2=>{leaf.rotation.z+=(Math.sin(t2*0.6+ph)*0.0008);};
+      scene.add(leaf); presetMeshes.push(leaf);
+    }
+    for(let i=0;i<6;i++){
+      const hh=3+Math.random()*4;
+      const branch=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.04+Math.random()*0.02,hh,6),
+        new THREE.MeshStandardMaterial({color:0x3d1a08,roughness:0.92,metalness:0.0}));
+      branch.position.set((Math.random()-0.5)*10,(Math.random()-0.5)*2,-2-Math.random()*0.5);
+      branch.rotation.set(0,(Math.random()-0.5)*0.3,(Math.random()-0.5)*0.5);
+      scene.add(branch); presetMeshes.push(branch);
+    }
+
+    function addTree(x,y,z,h,r,fcol){
+      const trunkH=h*0.58,trunkR=r*0.11;
+      const trunk=new THREE.Mesh(new THREE.CylinderGeometry(trunkR,trunkR*1.5,trunkH,8),
+        new THREE.MeshStandardMaterial({color:0x3d1a08,roughness:0.93,metalness:0.0}));
+      trunk.position.set(x,y+trunkH/2,z);
+      const foliage=new THREE.Mesh(new THREE.ConeGeometry(r,h*0.7,10),
+        new THREE.MeshStandardMaterial({color:fcol,emissive:fcol,emissiveIntensity:0.05,roughness:0.86,metalness:0.0}));
+      foliage.position.set(x,y+trunkH+h*0.28,z);
+      scene.add(trunk,foliage); presetMeshes.push(trunk,foliage);
+    }
+    addTree(-3,-3.5,-4,5,1.5,0x1a5c0a); addTree(4,-3.5,-4.5,4.2,1.3,0x235a10);
+    addTree(-6,-3.5,-5,3.8,1.1,0x1e6612); addTree(6,-3.5,-5.5,4.5,1.2,0x1a4e0a);
+    addTree(0,-3.5,-5,4,1.0,0x1e5a0e);
+    for(let i=0;i<12;i++){
+      const x=(i-5.5)*3.8+(Math.random()-0.5)*2.5, z=-8-Math.random()*10;
+      const h=2.5+Math.random()*2.8, r=0.65+Math.random()*0.9;
+      addTree(x,-3.5,z,h,r,[0x1a5c0a,0x235a10,0x174a0a,0x1e6010][i%4]);
+    }
+    for(let i=0;i<22;i++){
+      const x=(Math.random()-0.5)*40, z=-20-Math.random()*18;
+      addTree(x,-3.5,z,1.4+Math.random()*2,0.35+Math.random()*0.55,0x0d3408);
+    }
+    for(let i=0;i<45;i++){
+      const r=0.1+Math.random()*0.38;
+      const m=new THREE.Mesh(new THREE.SphereGeometry(r,7,5),
+        new THREE.MeshStandardMaterial({color:0x244012,roughness:0.92,metalness:0.0}));
+      m.position.set((Math.random()-0.5)*22,-3.5+r*0.3,-3.5-Math.random()*18);
+      scene.add(m); presetMeshes.push(m);
+    }
+    for(let i=0;i<6;i++){
+      const lTex=radialTex(64,[[0,'rgba(255,240,160,0.3)'],[0.5,'rgba(255,220,120,0.07)'],[1,'rgba(0,0,0,0)']]);
+      const shaft=new THREE.Mesh(new THREE.PlaneGeometry(0.5+Math.random()*0.8,10),
+        new THREE.MeshBasicMaterial({map:lTex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));
+      shaft.position.set((Math.random()-0.5)*12,1.5,-4-Math.random()*8);
+      scene.add(shaft); presetMeshes.push(shaft);
+    }
+    setStatus('FOREST'); fadeStatus(2000);
+  }
+
+  // ── City Street — neon-lit night city with buildings and street ──
+  function buildPresetCityStreet() {
+    setSceneVisible(false);
+    scene.fog = new THREE.FogExp2(0x000818, 0.022);
+    const amb = new THREE.AmbientLight(0x020416, 0.5);
+    const moon = new THREE.DirectionalLight(0xaabbff, 1.2); moon.position.set(-8,20,12);
+    scene.add(amb, moon); presetMeshes.push(amb, moon);
+
+    // Road
+    const road=new THREE.Mesh(new THREE.PlaneGeometry(12,100),
+      new THREE.MeshStandardMaterial({color:0x111118,roughness:0.8,metalness:0.3}));
+    road.rotation.x=-Math.PI/2; road.position.set(0,-3.5,-40);
+    scene.add(road); presetMeshes.push(road);
+
+    // Road centre line
+    for(let i=0;i<18;i++){
+      const line=new THREE.Mesh(new THREE.PlaneGeometry(0.15,1.8),
+        new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:0.6,roughness:0.5}));
+      line.rotation.x=-Math.PI/2; line.position.set(0,-3.48,-3-i*4.5);
+      scene.add(line); presetMeshes.push(line);
+    }
+
+    // Buildings left and right — varying heights and depths
+    const BDATA=[
+      // {side, x, z, w, h, d, col, emCol}
+      {s:-1,x:-7, z:-4, w:2.5,h:8, d:1.8,c:0x1a1a2e,e:0x4444ff},
+      {s:-1,x:-5, z:-9, w:3.0,h:14,d:2.0,c:0x0f1a2e,e:0x2244aa},
+      {s:-1,x:-8, z:-16,w:2.0,h:10,d:1.5,c:0x151a30,e:0xff4488},
+      {s:-1,x:-5, z:-24,w:2.8,h:18,d:2.2,c:0x0a1222,e:0x3366ff},
+      {s:-1,x:-7, z:-36,w:3.5,h:22,d:2.5,c:0x080f1a,e:0x2233aa},
+      {s:1, x:7,  z:-4, w:2.5,h:9, d:1.8,c:0x1e1628,e:0xff2255},
+      {s:1, x:5,  z:-9, w:3.0,h:13,d:2.0,c:0x160e22,e:0xcc22ff},
+      {s:1, x:7,  z:-16,w:2.2,h:16,d:1.6,c:0x120c1e,e:0xff8800},
+      {s:1, x:5,  z:-24,w:3.0,h:20,d:2.2,c:0x0e0918,e:0x22aaff},
+      {s:1, x:8,  z:-36,w:3.5,h:24,d:2.5,c:0x0a0614,e:0xff44aa},
+    ];
+    BDATA.forEach((b,i)=>{
+      const bld=new THREE.Mesh(new THREE.BoxGeometry(b.w,b.h,b.d),
+        new THREE.MeshStandardMaterial({color:b.c,emissive:new THREE.Color(b.e),emissiveIntensity:0.12,roughness:0.7,metalness:0.4}));
+      bld.position.set(b.x,b.h/2-3.5,b.z);
+      scene.add(bld); presetMeshes.push(bld);
+
+      // Window grids — point light per building
+      const pl=new THREE.PointLight(new THREE.Color(b.e),0.9,12);
+      pl.position.set(b.x,b.h*0.6,b.z+b.d/2+0.5);
+      scene.add(pl); presetMeshes.push(pl);
+
+      // Neon sign glow
+      const sTex=radialTex(64,[[0,`rgba(${(b.e>>16)&255},${(b.e>>8)&255},${b.e&255},0.8)`],[0.5,'rgba(0,0,0,0.1)'],[1,'rgba(0,0,0,0)']]);
+      const sg=new THREE.Mesh(new THREE.PlaneGeometry(b.w,1.2),
+        new THREE.MeshBasicMaterial({map:sTex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));
+      const ph=i*0.7;
+      sg.position.set(b.x,b.h*0.75,b.z+b.d/2+0.1);
+      sg.userData.animate=t2=>{sg.material.opacity=0.5+Math.sin(t2*0.8+ph)*0.4;};
+      scene.add(sg); presetMeshes.push(sg);
+    });
+
+    // Street lamp posts z=-4,-10,-18,-28
+    [[-4],[-10],[-18],[-28]].forEach(([z])=>{
+      [-5,5].forEach(sx=>{
+        const post=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,4.5,8),
+          new THREE.MeshStandardMaterial({color:0x444455,roughness:0.5,metalness:0.8}));
+        post.position.set(sx,-1.25,z);
+        const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.12,8,6),
+          new THREE.MeshStandardMaterial({color:0xffeebb,emissive:0xffeebb,emissiveIntensity:2.5}));
+        bulb.position.set(sx,1,z);
+        const pl2=new THREE.PointLight(0xffeeaa,1.8,8);
+        pl2.position.set(sx,1,z);
+        scene.add(post,bulb,pl2); presetMeshes.push(post,bulb,pl2);
+      });
+    });
+    setStatus('CITY STREET'); fadeStatus(2000);
+  }
+
+  // ── Space Station — exterior view with hull panels, solar arrays, viewport ──
+  function buildPresetSpaceStation() {
+    setSceneVisible(true);
+    scene.fog = null;
+    const sun2=new THREE.DirectionalLight(0xfff8f0,4.0); sun2.position.set(15,5,20);
+    const amb2=new THREE.AmbientLight(0x040820,0.35);
+    const earth=new THREE.DirectionalLight(0x2255aa,0.6); earth.position.set(-5,-8,10);
+    scene.add(sun2,amb2,earth); presetMeshes.push(sun2,amb2,earth);
+
+    // Near debris z=-3
+    for(let i=0;i<10;i++){
+      const r=0.04+Math.random()*0.12;
+      const d=new THREE.Mesh(new THREE.OctahedronGeometry(r),
+        new THREE.MeshStandardMaterial({color:0x888899,roughness:0.6,metalness:0.7}));
+      d.position.set((Math.random()-0.5)*16,(Math.random()-0.5)*8,-3-Math.random()*1.5);
+      const rx=(Math.random()-0.5)*0.008;
+      d.userData.animate=()=>{d.rotation.x+=rx;d.rotation.y+=0.005;};
+      scene.add(d); presetMeshes.push(d);
+    }
+
+    // Main hull — central cylinder
+    const hull=new THREE.Mesh(new THREE.CylinderGeometry(1.2,1.2,8,16),
+      new THREE.MeshStandardMaterial({color:0xcccccc,emissive:0x111122,emissiveIntensity:1.0,roughness:0.55,metalness:0.75}));
+    hull.rotation.z=Math.PI/2; hull.position.set(0,0,-14);
+    hull.userData.animate=t=>{hull.rotation.y=t*0.012;};
+    scene.add(hull); presetMeshes.push(hull);
+
+    // Solar panel arrays — large flat rectangles
+    const panelMat=new THREE.MeshStandardMaterial({color:0x111a44,emissive:0x0a1130,emissiveIntensity:1.0,roughness:0.2,metalness:0.6});
+    [[-6,0,-14],[6,0,-14]].forEach(([px,py,pz])=>{
+      const arm=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,3.5),
+        new THREE.MeshStandardMaterial({color:0x888888,roughness:0.5,metalness:0.8}));
+      arm.position.set(px,py,pz);
+      const panel=new THREE.Mesh(new THREE.BoxGeometry(3.5,0.06,1.8),panelMat);
+      panel.position.set(px,py,pz);
+      scene.add(arm,panel); presetMeshes.push(arm,panel);
+    });
+
+    // Docking ring — torus
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(1.5,0.08,12,60),
+      new THREE.MeshStandardMaterial({color:0xdddddd,emissive:0x222233,emissiveIntensity:1.0,roughness:0.4,metalness:0.9}));
+    ring.position.set(0,0,-10); ring.rotation.x=Math.PI/2;
+    ring.userData.animate=t=>{ring.rotation.y=t*0.018;};
+    scene.add(ring); presetMeshes.push(ring);
+
+    // Viewport lights around docking ring
+    for(let i=0;i<8;i++){
+      const a=i/8*Math.PI*2;
+      const vl=new THREE.PointLight(0x00aaff,0.8,4);
+      vl.position.set(Math.cos(a)*1.5, Math.sin(a)*1.5, -10);
+      scene.add(vl); presetMeshes.push(vl);
+    }
+
+    // Earth partial view in background
+    const earthSphere=new THREE.Mesh(new THREE.SphereGeometry(10,48,32),
+      new THREE.MeshStandardMaterial({color:0x1155aa,emissive:0x020d22,emissiveIntensity:1.0,roughness:0.85,metalness:0.0}));
+    earthSphere.position.set(-8,-12,-60);
+    earthSphere.userData.animate=t=>{earthSphere.rotation.y=t*0.01;};
+    scene.add(earthSphere); presetMeshes.push(earthSphere);
+    const eaTex=radialTex(256,[[0,'rgba(40,120,255,0.0)'],[0.55,'rgba(40,120,255,0.0)'],[0.67,'rgba(60,160,255,0.55)'],[0.82,'rgba(40,100,220,0.18)'],[1,'rgba(0,0,0,0)']]);
+    const eaGlow=mkSoftPlane(eaTex,26,26,-8,-12,-59.5,0);
+    scene.add(eaGlow); presetMeshes.push(eaGlow);
+
+    setStatus('SPACE STATION'); fadeStatus(2000);
+  }
+
+  // ── Mountain Landscape — procedural peaks, valley fog, dawn sky ──
+  function buildPresetMountain() {
+    setSceneVisible(false);
+    scene.fog = new THREE.FogExp2(0x8090a8, 0.018);
+    const sun3=new THREE.DirectionalLight(0xffcc88,3.5); sun3.position.set(12,10,20);
+    const sky=new THREE.AmbientLight(0x304060,0.8);
+    const fill3=new THREE.DirectionalLight(0x4060aa,0.5); fill3.position.set(-10,4,-10);
+    scene.add(sun3,sky,fill3); presetMeshes.push(sun3,sky,fill3);
+
+    renderer.setClearColor(0x8090c0, 1); // sky blue background
+
+    // Simple ground plane
+    const gnd3=new THREE.Mesh(new THREE.PlaneGeometry(200,200),
+      new THREE.MeshStandardMaterial({color:0x3a4a2a,roughness:0.92,metalness:0.0}));
+    gnd3.rotation.x=-Math.PI/2; gnd3.position.set(0,-5,-60);
+    scene.add(gnd3); presetMeshes.push(gnd3);
+
+    // Procedural mountain — ConeGeometry variations at varying depths
+    function addPeak(x,z,h,r,col){
+      const peak=new THREE.Mesh(new THREE.ConeGeometry(r,h,12),
+        new THREE.MeshStandardMaterial({color:col,roughness:0.88,metalness:0.0}));
+      peak.position.set(x,-5+h/2,z);
+      scene.add(peak); presetMeshes.push(peak);
+      // Snow cap
+      if(h>5){
+        const snow=new THREE.Mesh(new THREE.ConeGeometry(r*0.3,h*0.25,8),
+          new THREE.MeshStandardMaterial({color:0xeeeeff,roughness:0.6,metalness:0.0}));
+        snow.position.set(x,-5+h-h*0.08,z);
+        scene.add(snow); presetMeshes.push(snow);
+      }
+    }
+    // Near — large, partially obscures far
+    addPeak(-8,-5,7,3.5,0x4a4a3a); addPeak(7,-6,8,4.0,0x3a3a2a); addPeak(0,-4,6,3,0x505040);
+    // Mid
+    addPeak(-14,-15,12,6,0x2a2a22); addPeak(-4,-16,14,7,0x1e1e18); addPeak(10,-15,11,5.5,0x2a2a20); addPeak(18,-16,9,4.5,0x222218);
+    // Far
+    addPeak(-20,-35,18,9,0x181810); addPeak(0,-34,22,11,0x141410); addPeak(18,-36,16,8,0x141412);
+
+    // Valley mist layer — flat translucent planes
+    for(let i=0;i<4;i++){
+      const mTex=radialTex(128,[[0,'rgba(180,200,230,0.32)'],[0.6,'rgba(160,180,210,0.12)'],[1,'rgba(0,0,0,0)']]);
+      const mist=new THREE.Mesh(new THREE.PlaneGeometry(60,20),
+        new THREE.MeshBasicMaterial({map:mTex,transparent:true,depthWrite:false,blending:THREE.NormalBlending,side:THREE.DoubleSide,opacity:0.35}));
+      mist.rotation.x=-Math.PI/2; mist.position.set((Math.random()-0.5)*20,-4.5,-8-i*8);
+      const ph=i*1.2;
+      mist.userData.animate=t2=>{mist.position.x=(Math.random()-0.5)*0.5+Math.sin(t2*0.04+ph)*1.5;mist.material.opacity=0.25+Math.sin(t2*0.08+ph)*0.1;};
+      scene.add(mist); presetMeshes.push(mist);
+    }
+    setStatus('MOUNTAIN VISTA'); fadeStatus(2000);
+  }
+
+  // ── Modern Interior — minimalist room with depth-layered furniture ──
+  function buildPresetInterior() {
+    setSceneVisible(false);
+    scene.fog = null;
+    renderer.setClearColor(0x1a1812, 1);
+    const ceil=new THREE.DirectionalLight(0xffeedd,2.2); ceil.position.set(0,10,2);
+    const amb3=new THREE.AmbientLight(0x181208,0.7);
+    const accent=new THREE.PointLight(0xff6600,1.4,18); accent.position.set(-5,2,-8);
+    const accent2=new THREE.PointLight(0x0066ff,0.8,15); accent2.position.set(6,1,-14);
+    scene.add(ceil,amb3,accent,accent2); presetMeshes.push(ceil,amb3,accent,accent2);
+
+    const mat=c=>new THREE.MeshStandardMaterial({color:c,roughness:0.75,metalness:0.1});
+    const matM=c=>new THREE.MeshStandardMaterial({color:c,roughness:0.3,metalness:0.85});
+
+    // Floor
+    const floor=new THREE.Mesh(new THREE.PlaneGeometry(30,40),mat(0x2a2318));
+    floor.rotation.x=-Math.PI/2; floor.position.set(0,-3,-15);
+    // Ceiling
+    const ceiling=new THREE.Mesh(new THREE.PlaneGeometry(30,40),mat(0x181412));
+    ceiling.rotation.x=Math.PI/2; ceiling.position.set(0,5,-15);
+    // Back wall
+    const wall=new THREE.Mesh(new THREE.PlaneGeometry(30,10),mat(0x1e1a14));
+    wall.position.set(0,2,-35);
+    scene.add(floor,ceiling,wall); presetMeshes.push(floor,ceiling,wall);
+
+    // Close: desk at z=-5
+    const desk=new THREE.Mesh(new THREE.BoxGeometry(3.5,0.12,1.4),matM(0x8a6a44));
+    desk.position.set(-1,-1.2,-5);
+    const dLeg1=new THREE.Mesh(new THREE.BoxGeometry(0.1,1.1,0.1),matM(0x666655));
+    dLeg1.position.set(-1.6,-1.75,-4.5);
+    const dLeg2=dLeg1.clone(); dLeg2.position.set(0.6,-1.75,-4.5);
+    const laptop=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.5,0.6),matM(0x222222));
+    laptop.position.set(-1,-0.9,-4.8); laptop.rotation.x=-0.3;
+    // Screen glow
+    const screenGlow=new THREE.Mesh(new THREE.PlaneGeometry(0.75,0.45),
+      new THREE.MeshStandardMaterial({color:0x88ccff,emissive:0x44aaff,emissiveIntensity:0.8,roughness:0.0}));
+    screenGlow.position.set(-1,-0.65,-4.5); screenGlow.rotation.x=-0.3;
+    scene.add(desk,dLeg1,dLeg2,laptop,screenGlow); presetMeshes.push(desk,dLeg1,dLeg2,laptop,screenGlow);
+
+    // Mid: bookshelf z=-12
+    const shelf=new THREE.Mesh(new THREE.BoxGeometry(2.5,3.5,0.35),matM(0x5a4430));
+    shelf.position.set(4.5,0,-12);
+    scene.add(shelf); presetMeshes.push(shelf);
+    for(let i=0;i<8;i++){
+      const bk=new THREE.Mesh(new THREE.BoxGeometry(0.15+Math.random()*0.12,0.9+Math.random()*0.4,0.28),
+        new THREE.MeshStandardMaterial({color:new THREE.Color().setHSL(Math.random(),0.6,0.3),roughness:0.7,metalness:0.0}));
+      bk.position.set(4.5-0.9+i*0.26,0.8-Math.floor(i/5)*1.2,-11.82);
+      scene.add(bk); presetMeshes.push(bk);
+    }
+
+    // Far: window at z=-28 with outside glow
+    const winFrame=new THREE.Mesh(new THREE.BoxGeometry(4,3.5,0.12),matM(0x333322));
+    winFrame.position.set(-1,0.5,-28);
+    const winGlass=new THREE.Mesh(new THREE.PlaneGeometry(3.2,2.8),
+      new THREE.MeshStandardMaterial({color:0x334466,emissive:0x223355,emissiveIntensity:0.4,roughness:0.05,metalness:0.0,transparent:true,opacity:0.65}));
+    winGlass.position.set(-1,0.5,-27.9);
+    scene.add(winFrame,winGlass); presetMeshes.push(winFrame,winGlass);
+    const cityBgTex=radialTex(128,[[0,'rgba(100,150,255,0.6)'],[0.5,'rgba(60,100,200,0.22)'],[1,'rgba(0,0,0,0)']]);
+    const cityBg=mkSoftPlane(cityBgTex,12,8,-1,0.5,-27.8,0);
+    cityBg.userData.animate=t2=>{cityBg.material.opacity=0.4+Math.sin(t2*0.05)*0.15;};
+    scene.add(cityBg); presetMeshes.push(cityBg);
+
+    setStatus('INTERIOR'); fadeStatus(2000);
+  }
+
+  // ── Nebula V2 — volumetric-feel layered nebula, very close foreground wisps ──
+  function buildPresetNebulaV2() {
+    setSceneVisible(true);
+    scene.fog = null;
+
+    // Close foreground — bright dust wisps z=-3 to -6
+    const wispCols=[[255,100,50],[80,160,255],[200,50,255],[50,200,150],[255,180,50]];
+    for(let i=0;i<12;i++){
+      const [r,g,b]=wispCols[i%wispCols.length];
+      const wTex=radialTex(128,[[0,`rgba(${r},${g},${b},0.88)`],[0.35,`rgba(${r},${g},${b},0.35)`],[0.65,`rgba(${r},${g},${b},0.08)`],[1,'rgba(0,0,0,0)']]);
+      const sz=1.5+Math.random()*2.0;
+      const wisp=new THREE.Mesh(new THREE.PlaneGeometry(sz,sz),
+        new THREE.MeshBasicMaterial({map:wTex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));
+      wisp.position.set((Math.random()-0.5)*12,(Math.random()-0.5)*7,-3-Math.random()*3);
+      wisp.rotation.z=Math.random()*Math.PI;
+      const ph=Math.random()*Math.PI*2;
+      wisp.userData.animate=t2=>{wisp.position.x+= Math.sin(t2*0.3+ph)*0.002; wisp.material.opacity=(0.7+Math.sin(t2*0.25+ph)*0.3);};
+      scene.add(wisp); presetMeshes.push(wisp);
+    }
+
+    // Mid nebula clouds — large, saturated
+    [[60,20,200,0.82,-12,5,-22,0.28,55,38],[200,50,100,0.78,10,-4,-18,-0.4,48,34],
+     [20,140,220,0.72,-6,-3,-30,0.5,60,42],[160,40,200,0.68,6,5,-14,-0.22,42,30],
+     [40,200,180,0.65,-8,0,-38,0.15,70,50],[220,80,0,0.55,2,-5,-12,1.0,30,22]]
+    .forEach(([r,g,b,a,x,y,z,rz,w,h2],i)=>{
+      const ph=i*1.1;
+      const rc=Math.min(255,r+50),gc=Math.min(255,g+50),bc=Math.min(255,b+50);
+      const cTex=radialTex(128,[[0,`rgba(${rc},${gc},${bc},${a})`],[0.35,`rgba(${r},${g},${b},${(a*0.4).toFixed(2)})`],[0.7,`rgba(${r},${g},${b},${(a*0.08).toFixed(2)})`],[1,'rgba(0,0,0,0)']]);
+      const gTex=radialTex(128,[[0,`rgba(${r},${g},${b},${(a*0.25).toFixed(2)})`],[1,'rgba(0,0,0,0)']]);
+      const core=mkSoftPlane(cTex,w,h2,x,y,z,rz);
+      const glow=mkSoftPlane(gTex,w*1.9,h2*1.9,x,y,z-0.5,rz);
+      core.userData.animate=t2=>{core.position.x=x+Math.sin(t2*0.025+ph)*0.8;core.position.y=y+Math.cos(t2*0.018+ph)*0.5;glow.position.x=core.position.x;glow.position.y=core.position.y;};
+      scene.add(core,glow); presetMeshes.push(core,glow);
+    });
+    setStatus('NEBULA FIELD'); fadeStatus(2000);
+  }
+
+  // ── Abstract Cluster — ultimate geometry depth showcase ──
+  function buildPresetAbstractCluster() {
+    setSceneVisible(false);
+    scene.fog = new THREE.FogExp2(0x00050e, 0.014);
+
+    // 4-light rig for maximum material quality pop
+    const key  = new THREE.DirectionalLight(0xccddff, 5.0);  key.position.set(8,14,12);
+    const fill = new THREE.AmbientLight(0x060420, 0.4);
+    const rim  = new THREE.DirectionalLight(0xff3388, 3.5);  rim.position.set(-10,-6,6);
+    const acct = new THREE.PointLight(0x44aaff, 8, 18);      acct.position.set(0, 2, -4);
+    scene.add(key,fill,rim,acct); presetMeshes.push(key,fill,rim,acct);
+
+    // ─ EXTREME FOREGROUND z=-1.5 to -3.5 — these SCREAM parallax ─────────────
+    // Largest crystal: pure chrome mirror, z=-1.8, right in your face
+    const focal = new THREE.Mesh(new THREE.IcosahedronGeometry(1.1, 2),
+      new THREE.MeshStandardMaterial({
+        color:0xffffff, emissive:0x6644ff, emissiveIntensity:1.2,
+        roughness:0.0, metalness:1.0,
+        envMapIntensity:1.0,
+      }));
+    focal.position.set(0, 0.3, -1.8);
+    focal.userData.animate = t => { focal.rotation.y = t*0.18; focal.rotation.x = Math.sin(t*0.12)*0.18; };
+    scene.add(focal); presetMeshes.push(focal);
+
+    // Focal mega-glow — 3 layered planes
+    [[8,8,0xff66ff,0.9,1.1],[14,14,0x8844ff,0.4,1.0],[22,22,0x4422cc,0.15,0.9]].forEach(([w,h,col,op,z])=>{
+      const tx=radialTex(256,[[0,`rgba(${(col>>16)&255},${(col>>8)&255},${col&255},${op})`],[0.4,'rgba(0,0,0,0.2)'],[1,'rgba(0,0,0,0)']]);
+      const g=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));
+      g.position.set(0,0.3,-z);
+      g.userData.animate=t2=>{g.material.opacity=op*(0.5+Math.sin(t2*0.9)*0.5);};
+      scene.add(g); presetMeshes.push(g);
+    });
+
+    // 4 more close crystals at z=-2.5 to -3.5, spread around focal
+    const nearDefs = [
+      {r:0.65,x:-3.2, y:1.2, z:-2.5, col:0xffffff,em:0xff2266,emi:1.0,metal:1.0,rough:0.0},
+      {r:0.55,x: 3.5, y:-0.8,z:-2.8, col:0xffffff,em:0x22ffaa,emi:1.0,metal:1.0,rough:0.0},
+      {r:0.45,x:-0.8, y:-2.2,z:-3.0, col:0xffffff,em:0xffaa22,emi:0.9,metal:0.95,rough:0.02},
+      {r:0.38,x: 1.8, y: 2.8,z:-3.2, col:0xffffff,em:0x00ddff,emi:1.0,metal:1.0,rough:0.0},
+    ];
+    const nearTypes = ['oct','tet','dod','ico'];
+    nearDefs.forEach((d,i)=>{
+      let geo;
+      switch(nearTypes[i]){case'oct':geo=new THREE.OctahedronGeometry(d.r,1);break;case'tet':geo=new THREE.TetrahedronGeometry(d.r,0);break;case'dod':geo=new THREE.DodecahedronGeometry(d.r,0);break;default:geo=new THREE.IcosahedronGeometry(d.r,1);}
+      const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:d.col,emissive:d.em,emissiveIntensity:d.emi,roughness:d.rough,metalness:d.metal}));
+      m.position.set(d.x,d.y,d.z);
+      const rx=(Math.random()-0.5)*0.02, ry=(Math.random()-0.5)*0.025;
+      m.userData.animate=()=>{m.rotation.x+=rx;m.rotation.y+=ry;};
+      scene.add(m); presetMeshes.push(m);
+      // Per-crystal accent glow
+      const er=(d.em>>16)&255, eg=(d.em>>8)&255, eb=d.em&255;
+      const gt=radialTex(128,[[0,`rgba(${er},${eg},${eb},0.85)`],[0.35,'rgba(0,0,0,0.1)'],[1,'rgba(0,0,0,0)']]);
+      const gm=new THREE.Mesh(new THREE.PlaneGeometry(d.r*5,d.r*5),new THREE.MeshBasicMaterial({map:gt,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));
+      gm.position.set(d.x,d.y,d.z-0.1);
+      gm.userData.animate=t2=>{gm.material.opacity=0.6+Math.sin(t2*1.1+i)*0.4;};
+      scene.add(gm); presetMeshes.push(gm);
+    });
+
+    // ─ MID-FIELD z=-5 to -16: 70 dense metallic crystals ─────────────────────
+    for(let i=0;i<70;i++){
+      const frac=i/69, depth=-5-frac*11;
+      const sz=0.06+Math.pow(1-frac,1.8)*0.58;
+      const hue=0.58+Math.random()*0.22;
+      const sat=0.85+Math.random()*0.15;
+      const col=new THREE.Color().setHSL(hue,sat,0.55+Math.random()*0.3);
+      const types=['ico','oct','tet','dod']; const ty=types[i%4];
+      let geo;
+      switch(ty){case'ico':geo=new THREE.IcosahedronGeometry(sz,0);break;case'oct':geo=new THREE.OctahedronGeometry(sz);break;case'tet':geo=new THREE.TetrahedronGeometry(sz);break;default:geo=new THREE.DodecahedronGeometry(sz,0);}
+      const wf = Math.random()>0.7;
+      const mat = wf
+        ? new THREE.MeshBasicMaterial({color:col,wireframe:true,transparent:true,opacity:0.55,depthWrite:false,blending:THREE.AdditiveBlending})
+        : new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:0.4,roughness:0.01,metalness:0.95});
+      const m=new THREE.Mesh(geo,mat);
+      m.position.set((Math.random()-0.5)*24,(Math.random()-0.5)*15,depth);
+      const rx=(Math.random()-0.5)*0.022,ry=(Math.random()-0.5)*0.028;
+      m.userData.animate=()=>{m.rotation.x+=rx;m.rotation.y+=ry;};
+      scene.add(m); presetMeshes.push(m);
+    }
+
+    // ─ DEEP FIELD z=-18 to -55: wireframe haze forms a void of depth ─────────
+    for(let i=0;i<80;i++){
+      const sz=0.03+Math.random()*0.22;
+      const col2=new THREE.Color().setHSL(0.66+Math.random()*0.14,0.7,0.22+Math.random()*0.20);
+      const m=new THREE.Mesh(new THREE.IcosahedronGeometry(sz,0),
+        new THREE.MeshBasicMaterial({color:col2,wireframe:true,transparent:true,opacity:0.28,depthWrite:false,blending:THREE.AdditiveBlending}));
+      m.position.set((Math.random()-0.5)*36,(Math.random()-0.5)*22,-18-Math.random()*37);
+      const ry=(Math.random()-0.5)*0.008;
+      m.userData.animate=()=>{m.rotation.y+=ry;};
+      scene.add(m); presetMeshes.push(m);
+    }
+
+    // Moving accent point light — creates dynamic specular on mid crystals
+    const movingLight = new THREE.PointLight(0xff66ff, 6, 22);
+    movingLight.userData.animate = t => {
+      movingLight.position.set(Math.sin(t*0.4)*6, Math.cos(t*0.28)*4, -8);
+    };
+    scene.add(movingLight); presetMeshes.push(movingLight);
+
+    setStatus('ABSTRACT CLUSTER'); fadeStatus(2000);
+  }
+
+  // ── Reef — bioluminescent underwater scene ──
+  function buildPresetReef() {
+    setSceneVisible(false);
+    scene.fog = new THREE.FogExp2(0x001428,0.025);
+    renderer.setClearColor(0x001428,1);
+    const sunU=new THREE.DirectionalLight(0x80d4ff,1.8); sunU.position.set(4,15,8);
+    const ambU=new THREE.AmbientLight(0x001828,0.7);
+    const caustic=new THREE.PointLight(0x00aaff,1.5,25); caustic.position.set(0,8,-15);
+    scene.add(sunU,ambU,caustic); presetMeshes.push(sunU,ambU,caustic);
+
+    // Sea floor z=-8
+    const floor2=new THREE.Mesh(new THREE.PlaneGeometry(60,60),
+      new THREE.MeshStandardMaterial({color:0x0a1c12,roughness:0.95,metalness:0.0}));
+    floor2.rotation.x=-Math.PI/2; floor2.position.set(0,-5,-22);
+    scene.add(floor2); presetMeshes.push(floor2);
+
+    // Coral columns — very close z=-3 to -5
+    const coralCols=[0xff4488,0xff8820,0x22ddaa,0xffdd22,0xee44ff];
+    for(let i=0;i<12;i++){
+      const x=(i-5.5)*2.2+(Math.random()-0.5)*1.5;
+      const h=1.0+Math.random()*3.0, r=0.08+Math.random()*0.18;
+      const col=coralCols[i%coralCols.length];
+      const c=new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.4,h,8),
+        new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:0.35,roughness:0.7,metalness:0.0}));
+      c.position.set(x,-5+h/2,-3.5-Math.random()*1.5);
+      // Fan top
+      const fan=new THREE.Mesh(new THREE.TorusGeometry(r*2.5,r*0.4,6,20),
+        new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:0.5,roughness:0.6,metalness:0.0,transparent:true,opacity:0.8}));
+      fan.position.set(x,-5+h+r*0.4,-3.5-Math.random()*1.5);
+      fan.rotation.x=Math.PI/2+(Math.random()-0.5)*0.5;
+      const ph=i*0.8;
+      fan.userData.animate=t2=>{fan.rotation.z=Math.sin(t2*0.4+ph)*0.15;};
+      scene.add(c,fan); presetMeshes.push(c,fan);
+    }
+
+    // Floating bioluminescent particles
+    const N=600; const geo3=new THREE.BufferGeometry();
+    const pos3=new Float32Array(N*3),col3=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      pos3[i*3]=(Math.random()-0.5)*24; pos3[i*3+1]=(Math.random()-0.5)*12; pos3[i*3+2]=-3-Math.random()*22;
+      const h2=Math.random(); col3[i*3]=0;col3[i*3+1]=0.4+Math.random()*0.6;col3[i*3+2]=0.6+Math.random()*0.4;
+    }
+    geo3.setAttribute('position',new THREE.BufferAttribute(pos3,3));
+    geo3.setAttribute('color',   new THREE.BufferAttribute(col3,3));
+    const particles3=new THREE.Points(geo3,new THREE.PointsMaterial({size:0.08,vertexColors:true,transparent:true,opacity:0.75,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true,map:starTex}));
+    particles3.userData.animate=t2=>{particles3.rotation.y=t2*0.004;};
+    scene.add(particles3); presetMeshes.push(particles3);
+
+    setStatus('BIOLUMINESCENT REEF'); fadeStatus(2000);
+  }
+
   // ── Preset dispatcher ────────────────────────────────
   function setPreset(name) {
     clearPreset();
@@ -2087,7 +2667,8 @@
     restoreFog();
 
     const vig = el('vignette');
-    if(vig) vig.style.opacity = ['space','aurora','nebula','binary','galaxy','starcluster','crystalcave','void','icemoon'].includes(name) ? '1' : '0.65';
+    if(vig) vig.style.opacity = ['space','aurora','nebula','nebulav2','binary','galaxy','starcluster','crystalcave','void','icemoon','reef'].includes(name) ? '1' : '0.65';
+    renderer.setClearColor(0x020010, 1); // reset; individual presets may override
 
     switch(name){
       case 'space':       buildPresetSpace();       break;
@@ -2118,6 +2699,14 @@
       case 'icemoon':     buildPresetIceMoon();     break;
       case 'crystalv2':   buildPresetCrystalV2();   break;
       case 'portalv2':    buildPresetPortalV2();    break;
+      case 'forest':      buildPresetForest();      break;
+      case 'citystreet':  buildPresetCityStreet();  break;
+      case 'spacestation':buildPresetSpaceStation();break;
+      case 'mountain':    buildPresetMountain();    break;
+      case 'interior':    buildPresetInterior();    break;
+      case 'nebulav2':    buildPresetNebulaV2();    break;
+      case 'cluster':     buildPresetAbstractCluster(); break;
+      case 'reef':        buildPresetReef();        break;
     }
     document.querySelectorAll('.preset-btn').forEach(b=>{
       const a=b.dataset.preset===name;
@@ -2218,22 +2807,41 @@
   function onFace(results){
     if(!results.multiFaceLandmarks?.length){latestNose=null;return;}
     const lm=results.multiFaceLandmarks[0];
-    const nose=lm[1]; // nose tip
+    const nose=lm[1]; // nose tip for preview dot
     latestNose={x:nose.x,y:nose.y};
 
-    // Eye outer corners — distance is proportional to face size (inverse of Z distance)
-    // lm[33] = left eye outer, lm[263] = right eye outer
-    const eyeDist=Math.hypot(lm[263].x-lm[33].x, lm[263].y-lm[33].y);
+    // ── X: 5-landmark centroid across nose bridge + cheekbones for jitter reduction
+    // lm[1]=nose, lm[4]=nose bridge, lm[6]=mid-forehead, lm[168]=nose top, lm[197]=nose base
+    const faceX = (lm[1].x + lm[4].x + lm[6].x + lm[168].x + lm[197].x) / 5;
+
+    // ── Y: forehead (lm[10]) to chin (lm[152]) midpoint — more stable than nose alone
+    const faceY = (lm[10].y + lm[152].y) / 2;
+
+    // ── Z: inter-pupil distance for depth (lm[468]=left iris, lm[473]=right iris)
+    //    Fall back to outer eye corners if iris not available (refineLandmarks=false)
+    const lEye = lm[468] || lm[33];
+    const rEye = lm[473] || lm[263];
+    const eyeDist = Math.hypot(rEye.x - lEye.x, rEye.y - lEye.y);
 
     if(!calibrated){
-      refNoseX=nose.x; refNoseY=nose.y; refEyeDist=eyeDist;
+      refNoseX=faceX; refNoseY=faceY; refEyeDist=eyeDist; refFaceY=faceY;
+      _emaX.v=0; _emaY.v=0; _emaZ.v=0;
       calibrated=true; return;
     }
-    headRaw.x = -(nose.x - refNoseX) * 2.5 * CFG.sensitivity;
-    headRaw.y = -(nose.y - refNoseY) * 2.5 * CFG.sensitivity;
-    // Z: positive = face bigger = leaning in = zoom in effect
-    // Clamp to ±1.5 to avoid extreme zoom
-    headRaw.z=Math.max(-1.5,Math.min(1.5,(eyeDist-refEyeDist)*8));
+
+    // Raw deltas
+    const dx = -(faceX - refNoseX) * 2.5 * CFG.sensitivity;
+    const dy = -(faceY - refNoseY) * 2.5 * CFG.sensitivity;
+    const dz = Math.max(-1.5, Math.min(1.5, (eyeDist - refEyeDist) * 8));
+
+    // Per-axis EMA smoothing — Z has slower alpha to reduce lean-noise
+    _emaX.v += (_emaX.a) * (dx - _emaX.v);
+    _emaY.v += (_emaY.a) * (dy - _emaY.v);
+    _emaZ.v += (_emaZ.a) * (dz - _emaZ.v);
+
+    headRaw.x = _emaX.v;
+    headRaw.y = _emaY.v;
+    headRaw.z = _emaZ.v;
   }
 
   /* ── GYROSCOPE ── */
@@ -2324,7 +2932,7 @@
   bindSliders('d-depth', 'm-depth', 'd-depth-v', 'm-depth-v', 'depthScale', 2);
   bindSliders('d-smooth','m-smooth','d-smooth-v','m-smooth-v','smoothing',   3);
 
-  // Per-axis sliders (desktop only — not duplicated mobile to save space)
+  // Desktop-only sliders
   function bindSliderD(dId,dVId,key,dec,suffix){
     const dEl=el(dId),dV=el(dVId);
     if(!dEl) return;
@@ -2336,6 +2944,15 @@
   bindSliderD('d-sensz','d-sensz-v','sensZ',2);
   bindSliderD('d-eyedist','d-eyedist-v','eyeDistMult',2);
   bindSliderD('d-frustum','d-frustum-v','frustumScale',2);
+  bindSliderD('d-dsmooth','d-dsmooth-v','depthSmooth',3);
+  bindSliderD('d-dead',   'd-dead-v',   'deadzone',   2);
+  bindSliderD('d-clamp',  'd-clamp-v',  'maxClamp',   2);
+  bindSliderD('d-yaw',    'd-yaw-v',    'yawStrength',2);
+  bindSliderD('d-pitch',  'd-pitch-v',  'pitchStrength',2);
+  bindSliderD('d-bright', 'd-bright-v', 'brightness', 2);
+  bindSliderD('d-contrast','d-contrast-v','contrast', 2);
+  bindSliderD('d-sat',    'd-sat-v',    'saturation', 2);
+  bindSliderD('d-fog',    'd-fog-v',    'fogDensity', 2);
 
   // Pano sensitivity — desktop + mobile
   function bindPanoSens(dId,mId,dVId,mVId){
@@ -2376,6 +2993,19 @@
 
   // Off-axis projection toggle
   el('d-offaxis')?.addEventListener('change', e => { CFG.offAxisOn = e.target.checked; });
+
+  // Particles toggle
+  el('d-particles')?.addEventListener('change', e => {
+    CFG.showParticles = e.target.checked;
+    starLayers.forEach(s => { s.visible = CFG.showParticles; });
+  });
+
+  // Fog toggle
+  el('d-fog-on')?.addEventListener('change', e => {
+    CFG.showFog = e.target.checked;
+    if(!CFG.showFog){ if(scene.fog){ scene.fog._saved=scene.fog.density; scene.fog.density=0; } }
+    else { if(scene.fog && scene.fog._saved !== undefined) scene.fog.density = scene.fog._saved; }
+  });
 
   // Debug HUD toggle (checkbox + D key)
   function toggleDebug() {
@@ -2476,25 +3106,33 @@
 
     const t=clock.getElapsedTime();
     const a=CFG.smoothing;
+    _emaX.a = Math.min(0.5, a * CFG.sensX);
+    _emaY.a = Math.min(0.5, a * CFG.sensY);
+    _emaZ.a = Math.min(0.4, CFG.depthSmooth * CFG.sensZ); // separate Z smoothing
     headSmooth.x+=(headRaw.x-headSmooth.x)*a;
     headSmooth.y+=(headRaw.y-headSmooth.y)*a;
-    headSmooth.z+=(headRaw.z-headSmooth.z)*a; // Z depth smoothing
+    headSmooth.z+=(headRaw.z-headSmooth.z)*CFG.depthSmooth; // Z uses its own rate
 
     applyOffAxis(headSmooth.x, headSmooth.y);
 
-    // Feed eye position (cam3.position.x/y) to depth shader.
-    // In off-axis mode cam3.position IS the eye position — physically correct.
     if(depthShaderUniforms){
       depthShaderUniforms.uEyePos.value.set(cam3.position.x, cam3.position.y);
-      // Keep strength in sync with depthScale setting
       depthShaderUniforms.uStrength.value = 0.025 * CFG.depthScale;
     }
 
-    // 3D model: NO artificial rotation — off-axis projection naturally reveals
-    // different angles as eye position changes. Model sits still in world space.
-    // (idle spin removed — it fought the correct parallax behaviour)
+    // CSS filter for brightness / contrast / saturation (applies to entire canvas)
+    renderer.domElement.style.filter =
+      `brightness(${CFG.brightness}) contrast(${CFG.contrast}) saturate(${CFG.saturation})`;
 
-    // Animate preset meshes via per-mesh callbacks
+    // Live fog density
+    if(scene.fog && scene.fog.density !== undefined){
+      scene.fog.density = (scene.fog._baseDensity || scene.fog.density) * CFG.fogDensity;
+    }
+
+    // Star layer visibility
+    starLayers.forEach(s => { s.visible = CFG.showParticles; });
+
+    // Animate preset meshes
     for(const m of presetMeshes){ if(typeof m.userData.animate==='function') m.userData.animate(t); }
 
     for(const f of floaters){f.rotation.x+=f.userData.rot.x;f.rotation.y+=f.userData.rot.y;f.rotation.z+=f.userData.rot.z;}
